@@ -1,0 +1,3070 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Algebra Ball Tiles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout: one-screen app. Readout on top, dotted board fills the middle, ball tray docked under the thumb. */
+:root{
+  --ground:#e8ecf1; --paper:#fbfcfe; --dot:#c4cdd9; --ink:#18202c; --muted:#566172; --line:#d2d9e3; --chip:#ffffff;
+  --accent:#1f57c9; --accent-ink:#ffffff; --good:#0f7a57; --good-bg:#dcf2e8; --hint-bg:#e3ebfb;
+  --b-x2:#4b55cf; --b-x:#0e9383; --b-one:#f2a431; --b-neg:#d9402f; --b-x3:#9b2fb5;
+  --hl-a:#7a35d6; --hl-b:#0b7d63; --hl-c:#c4520a;
+  --t-x2:#ffffff; --t-x:#ffffff; --t-one:#3b2500; --t-neg:#ffffff;
+  --shadow:0 1px 2px rgb(20 30 50 / .08), 0 6px 18px rgb(20 30 50 / .07);
+  --f-display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ground:#0f1319; --paper:#161b23; --dot:#2d3644; --ink:#e7ecf3; --muted:#9ba7b8; --line:#29313d; --chip:#1d242f;
+  --accent:#88a9ff; --accent-ink:#0c1220; --good:#63d6a7; --good-bg:#143628; --hint-bg:#1b2742;
+  --b-x2:#6670ea; --b-x:#17b09e; --b-one:#f5b042; --b-neg:#ea5443; --b-x3:#c46ae0;
+  --hl-a:#b48cff; --hl-b:#4fd6ae; --hl-c:#ff9d5c;
+  --shadow:0 1px 2px rgb(0 0 0 / .3), 0 6px 18px rgb(0 0 0 / .25); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --ground:#0f1319; --paper:#161b23; --dot:#2d3644; --ink:#e7ecf3; --muted:#9ba7b8; --line:#29313d; --chip:#1d242f;
+  --accent:#88a9ff; --accent-ink:#0c1220; --good:#63d6a7; --good-bg:#143628; --hint-bg:#1b2742;
+  --b-x2:#6670ea; --b-x:#17b09e; --b-one:#f5b042; --b-neg:#ea5443; --b-x3:#c46ae0;
+  --hl-a:#b48cff; --hl-b:#4fd6ae; --hl-c:#ff9d5c;
+  --shadow:0 1px 2px rgb(0 0 0 / .3), 0 6px 18px rgb(0 0 0 / .25); color-scheme:dark }
+
+html{height:100%;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box}
+body{height:100%;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:15px;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.app{height:100%;max-width:980px;margin:0 auto;padding-inline:16px;padding-block:10px 12px;display:flex;flex-direction:column;gap:10px}
+
+/* Header */
+.top{display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.logo{display:flex;align-items:flex-end;gap:3px}
+.logo i{display:block;border-radius:50%;background:radial-gradient(circle at 34% 28%,rgb(255 255 255 / .7),transparent 30%),var(--c)}
+.logo i:nth-child(1){width:20px;height:20px;border-radius:4px;--c:var(--b-x2)}
+.logo i:nth-child(2){width:8px;height:20px;border-radius:3px;--c:var(--b-x)}
+.logo i:nth-child(3){width:8px;height:8px;--c:var(--b-one)}
+h1{font:800 20px/1 var(--f-display);letter-spacing:-.01em;margin:0;white-space:nowrap;text-wrap:balance}
+.pill{border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;min-height:40px}
+.pill[aria-expanded="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--chip);font-weight:700;font-size:17px;cursor:pointer}
+
+/* Readout */
+.readout{display:flex;flex-direction:column;gap:6px}
+.readrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.seg{display:inline-flex;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;border-radius:999px;padding:7px 13px;font-weight:700;font-size:14px;cursor:pointer;color:var(--muted);min-height:34px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.seg .cap{align-self:center;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:0 6px 0 10px}
+.readrow{row-gap:8px}
+.expr{font:600 clamp(24px,6.4vw,34px)/1.15 var(--f-display);letter-spacing:-.01em;font-variant-numeric:tabular-nums;min-height:1.15em;overflow-wrap:anywhere}
+.expr i{font-family:var(--f-body);font-style:italic;font-weight:700;padding-right:.04em}
+.expr sup{font-size:.55em;line-height:0}
+.expr .eq{color:var(--muted);margin:0 .25em}
+.status{margin:0;font-size:14px;line-height:1.35;color:var(--muted);align-self:flex-start;border-radius:10px;padding:5px 10px;background:transparent;margin-left:-10px}
+.status.hint{background:var(--hint-bg);color:var(--ink);margin-left:0}
+.status.good{background:var(--good-bg);color:var(--good);font-weight:700;margin-left:0}
+
+/* Build panel */
+.build{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.build label{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.build .row{display:flex;gap:8px;margin-top:6px}
+.build input{flex:1;min-width:0;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:12px;padding:10px 12px;font:600 17px var(--f-body);min-height:44px}
+.go{border:0;background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer;min-height:44px}
+.err{margin:6px 0 0;color:var(--b-neg);font-size:14px;font-weight:700}
+.err:empty{display:none}
+.presets{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.presets::-webkit-scrollbar{display:none}
+.presets button{flex:none;border:1px solid var(--line);background:var(--chip);border-radius:999px;padding:7px 12px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
+.presets .tag{flex:none;align-self:center;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-inline:4px}
+
+/* Board */
+.board{position:relative;flex:1;min-height:220px;border-radius:20px;background-color:var(--paper);
+  background-image:radial-gradient(var(--dot) 1.3px,transparent 1.6px);background-size:22px 22px;background-position:11px 11px;
+  border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.divider{position:absolute;background:var(--line);z-index:1;pointer-events:none}
+.divider.v{top:10px;bottom:10px;width:2px;transform:translateX(-1px)}
+.divider.h{left:10px;right:10px;height:2px;transform:translateY(-1px)}
+.divider span{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:var(--paper);border:2px solid var(--line);display:grid;place-items:center;font:800 20px/1 var(--f-display);color:var(--muted)}
+.side-label{position:absolute;z-index:1;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);pointer-events:none}
+.bin{position:absolute;left:50%;bottom:12px;transform:translate(-50%,20px);opacity:0;z-index:4;pointer-events:none;
+  padding:10px 16px;border-radius:999px;border:2px dashed var(--muted);background:var(--paper);color:var(--muted);font-weight:700;font-size:14px;transition:opacity .15s,transform .15s,background .15s}
+.bin.show{opacity:1;transform:translate(-50%,0)}
+.bin.hot{background:var(--b-neg);border-color:var(--b-neg);color:#fff}
+.toast{position:absolute;left:50%;top:12px;transform:translate(-50%,-8px);opacity:0;z-index:6;pointer-events:none;background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:999px;font-weight:700;font-size:14px;transition:opacity .2s,transform .2s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* Balls */
+.ball{position:absolute;left:0;top:0;width:var(--w);height:var(--h);z-index:2;touch-action:none;cursor:grab;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.ball.dragging{transition:none;z-index:5;cursor:grabbing}
+.orb{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;color:var(--tc);
+  background:radial-gradient(circle at 33% 27%,rgb(255 255 255 / .78),rgb(255 255 255 / 0) 24%),
+             radial-gradient(circle at 50% 45%,var(--c) 58%,color-mix(in srgb,var(--c) 68%,#000) 100%);
+  box-shadow:0 3px 7px rgb(0 0 0 / .2),inset 0 -3px 6px rgb(0 0 0 / .16);
+  transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s,box-shadow .2s}
+.lab{font:700 17px/1 var(--f-body);font-style:italic;letter-spacing:-.02em;pointer-events:none}
+[data-t="one"] .lab{font-style:normal;font-size:13px;font-family:var(--f-display)}
+[data-t="x"] .lab{font-size:16px}
+[data-t="x2"] .lab{font-size:20px}
+[data-t="x"] .orb,[data-t="x2"] .orb{
+  background:linear-gradient(160deg,rgb(255 255 255 / .34),rgb(255 255 255 / 0) 46%),
+             linear-gradient(0deg,color-mix(in srgb,var(--c) 82%,#000),var(--c) 40%);
+  box-shadow:0 3px 7px rgb(0 0 0 / .18),inset 0 0 0 1.5px color-mix(in srgb,var(--c) 70%,#000)}
+[data-t="x"] .orb{border-radius:calc(var(--u, 30px) / 2)}
+[data-t="x2"] .orb{border-radius:calc(var(--u, 30px) / 2)}
+.ball.dragging[data-t="x"] .orb,.ball.dragging[data-t="x2"] .orb{transform:scale(1.06)}
+[data-t="x2"]{--c:var(--b-x2);--tc:var(--t-x2)}
+[data-t="x"]{--c:var(--b-x);--tc:var(--t-x)}
+[data-t="one"]{--c:var(--b-one);--tc:var(--t-one)}
+.neg{--c:var(--b-neg);--tc:var(--t-neg)}
+.ball.enter .orb{transform:scale(.15);opacity:0}
+.ball.vanish .orb{transform:scale(0);opacity:0}
+.ball.dragging .orb{transform:scale(1.12);box-shadow:0 10px 18px rgb(0 0 0 / .25),inset 0 -3px 6px rgb(0 0 0 / .16)}
+.ball.flip .orb{animation:flip .36s ease}
+.ball.pulse .orb{animation:pulse .5s ease}
+@keyframes flip{50%{transform:scaleX(0)}}
+@keyframes pulse{40%{transform:scale(1.15)}}
+
+/* Actions */
+.actions{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.actions::-webkit-scrollbar{display:none}
+.act{flex:none;display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--chip);border-radius:12px;padding:0 12px;min-height:40px;font-weight:700;font-size:14px;cursor:pointer}
+.act svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.act:disabled{opacity:.4;cursor:default}
+.act.primary:not(:disabled){background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* Tray */
+.tray{display:flex;flex-direction:column;gap:8px}
+.target{align-self:center}
+.tray-opts{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.tray-opts .seg button{padding:6px 11px;min-height:32px}
+.target .cap{align-self:center;font-size:13px;font-weight:700;color:var(--muted);padding:0 8px 0 10px}
+.palette{display:flex;justify-content:space-around;gap:4px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:6px;box-shadow:var(--shadow)}
+.stepper{display:flex;align-items:center;gap:2px;flex:none}
+.stepper .tb{width:auto;min-width:48px;height:58px;padding:0 2px}
+.st-btn{width:32px;height:32px;flex:none;border-radius:50%;border:1px solid var(--line);background:var(--chip);font:800 20px/1 var(--f-display);display:grid;place-items:center;cursor:pointer;touch-action:none;padding:0}
+.st-btn.minus{color:var(--b-neg)}
+.st-btn.plus{color:var(--good)}
+.st-btn:active{background:var(--ground)}
+.tb{height:66px;border:0;background:transparent;border-radius:14px;display:grid;place-items:center;cursor:pointer;touch-action:none;padding:0}
+.tb:active{background:var(--ground)}
+.tb .mini{--k:.6;--u:18px;width:calc(var(--w)*var(--k));height:calc(var(--h)*var(--k));display:block}
+.tb .mini .lab{font-size:14px}
+.tb .mini[data-t="one"] .lab{font-size:10px}
+.tb .mini[data-t="x"] .lab{font-size:12px}
+.ghost{position:fixed;left:0;top:0;z-index:50;pointer-events:none;width:var(--w);height:var(--h)}
+.ghost .orb{transform:scale(1.12);box-shadow:0 12px 22px rgb(0 0 0 / .28)}
+
+/* Help sheet */
+.sheet-back{position:fixed;inset:0;background:rgb(10 14 20 / .45);z-index:60;display:grid;place-items:end center;padding:16px}
+.sheet{background:var(--paper);color:var(--ink);border-radius:22px;max-width:520px;width:100%;padding:20px 20px 16px;box-shadow:var(--shadow);max-height:85%;overflow:auto}
+.sheet h2{font:800 22px/1.1 var(--f-display);margin:0 0 12px}
+.sheet ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.sheet li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;line-height:1.45;max-width:62ch}
+.sheet li b{display:block}
+.sheet .dotc{width:18px;height:18px;border-radius:50%;margin-top:3px;background:radial-gradient(circle at 33% 27%,rgb(255 255 255 / .7),transparent 30%),var(--c)}
+.sheet .close{margin-top:16px;width:100%}
+
+/* Cube demo */
+.cube-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;touch-action:none;cursor:grab;display:block}
+.cube-canvas:active{cursor:grabbing}
+.cube-hint{position:absolute;left:12px;bottom:12px;z-index:3;pointer-events:none;font-size:13px;font-weight:700;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.cube-legend{position:absolute;right:12px;top:12px;z-index:3;pointer-events:none;display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:var(--muted);background:color-mix(in srgb,var(--paper) 88%,transparent);border-radius:12px;padding:8px 10px}
+.cube-legend span{display:flex;align-items:center;gap:7px}
+.cube-legend b{width:12px;height:12px;border-radius:3px;background:var(--c)}
+.cube-legend .ub{border-radius:50%}
+/* Drag-to-complete demo */
+.d-grow{position:absolute;left:0;top:0;border:2px dashed var(--accent);border-radius:10px;background:color-mix(in srgb,var(--accent) 7%,transparent);pointer-events:none;z-index:0}
+.d-grow.done{border-style:solid;border-width:3px;background:color-mix(in srgb,var(--good) 10%,transparent);border-color:var(--good)}
+.d-handle{position:absolute;left:0;top:0;width:56px;height:56px;margin:-28px 0 0 -28px;display:grid;place-items:center;pointer-events:auto;touch-action:none;cursor:nwse-resize;z-index:4;border:0;background:transparent;padding:0;border-radius:50%}
+.d-handle .knob{width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;box-shadow:0 0 0 3px var(--paper),0 4px 10px rgb(0 0 0 / .25);transition:transform .15s}
+.d-handle .knob svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.d-handle:hover .knob,.d-handle.grab .knob{transform:scale(1.15)}
+.d-handle.idle::before{content:"";position:absolute;inset:8px;border-radius:50%;border:3px solid var(--accent);animation:ring 1.6s ease-out infinite;pointer-events:none}
+@keyframes ring{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.5);opacity:0}}
+.d-handle.done .knob{background:var(--good)}
+.d-anim .d-grow,.d-anim .d-handle{transition:transform .25s cubic-bezier(.2,.8,.2,1),width .25s cubic-bezier(.2,.8,.2,1),height .25s cubic-bezier(.2,.8,.2,1)}
+.demo-layer.quick .dt,.demo-layer.quick .dt .lab{transition-duration:.42s}
+.d-dim.live{transition:opacity .25s,width .25s}
+@media (prefers-reduced-motion: reduce){ .d-handle.idle::before{animation:none} .d-anim .d-grow,.d-anim .d-handle{transition:none} }
+.gmode{align-self:flex-start}
+.d-hole{position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;border:2px dashed var(--b-neg);background:color-mix(in srgb,var(--b-neg) 9%,transparent);color:var(--b-neg);display:grid;place-items:center;font:800 12px/1 var(--f-display);pointer-events:none;z-index:1;opacity:0;transform:scale(.4);transition:opacity .3s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.d-hole.show{opacity:1;transform:scale(1)}
+@media (prefers-reduced-motion: reduce){ .d-hole{transition:none} }
+/* Fraction balls and sharing */
+.orb{position:relative}
+.ball.frac .orb{
+  background:repeating-conic-gradient(from 0deg,rgb(0 0 0 / .32) 0 2deg,transparent 2deg calc(360deg / var(--den))),
+             conic-gradient(var(--c) 0 calc(var(--pct) * 1%),color-mix(in srgb,var(--c) 14%,transparent) 0);
+  box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 75%,#000),0 2px 5px rgb(0 0 0 / .15)}
+.ball.frac .lab{color:var(--ink);font-size:12px;text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 2px var(--paper)}
+.ball.slicing .orb::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,var(--paper) 0 5deg,transparent 5deg calc(360deg / var(--den)));animation:slice .5s ease}
+@keyframes slice{from{transform:rotate(-40deg);opacity:0}}
+.ball.ghost-g .orb{opacity:.28;transform:scale(.9)}
+.ball.keep-g .orb{box-shadow:0 0 0 3px var(--accent),0 3px 7px rgb(0 0 0 / .2)}
+.seg.demos{max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg.demos::-webkit-scrollbar{display:none}
+.seg.demos button,.seg.demos .cap{flex:none;white-space:nowrap}
+.why{border:0;background:none;padding:0 0 0 6px;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.z-eq{position:absolute;border-left:2px solid var(--line)}
+.z-eq span{position:absolute;left:-17px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:var(--paper);border:2px solid var(--line);display:grid;place-items:center;font:800 18px/1 var(--f-display);color:var(--muted)}
+.z-side{position:absolute;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.z-gap{border:2px dashed var(--accent);border-radius:6px;background:color-mix(in srgb,var(--accent) 8%,transparent)}
+/* Zero pairs cancelling: the negative piece slides over the positive one, then both vanish */
+.ball.slide-over{transition:transform .55s cubic-bezier(.45,.05,.3,1);z-index:6}
+.zero-pop{position:absolute;left:0;top:0;z-index:7;pointer-events:none;font:800 24px/1 var(--f-display);color:var(--muted);
+  transform:translate(-50%,-50%);animation:zpop .8s ease forwards}
+@keyframes zpop{0%{opacity:0;scale:.4}35%{opacity:1;scale:1.15}100%{opacity:0;scale:1;translate:0 -16px}}
+.dt.zap.neg{z-index:3}
+.dt.zap.off .orb{transition:transform .28s ease .8s,opacity .28s ease .8s}
+@media (prefers-reduced-motion: reduce){ .ball.slide-over{transition:none} .zero-pop{animation:none;opacity:0} }
+/* Area-model parts: each piece of the finished square/rectangle with its length × width */
+/* frame: top and bottom edges take the colour of the length across the top, left and right edges the colour of the length down the side */
+.d-part{position:absolute;border:4px solid;border-color:var(--ct) var(--cs);border-radius:0;background:color-mix(in srgb,var(--paper) 30%,transparent);
+  display:grid;place-items:center;z-index:3;pointer-events:none;transform:scale(.96)}
+.d-part.show{transform:none;transition:opacity .4s,transform .4s}
+.d-part b{background:var(--paper);color:var(--ink);border-radius:8px;padding:3px 7px;font:700 15px/1.1 var(--f-display);white-space:nowrap;text-align:center;box-shadow:0 2px 6px rgb(0 0 0 / .18)}
+.d-part b i{font-family:var(--f-body)}
+.d-box.d-part.show.past{opacity:.8}
+.d-part.cur{box-shadow:0 6px 18px rgb(0 0 0 / .25);z-index:4}
+.d-part.cur b{animation:prod .5s cubic-bezier(.2,.8,.2,1)}
+@keyframes prod{0%{scale:.3;opacity:0}70%{scale:1.15}100%{scale:1;opacity:1}}
+.d-box.d-dim.show.dimmed{opacity:.25}
+.d-dim.hot span{animation:hot .6s ease}
+@keyframes hot{40%{scale:1.4}}
+@media (prefers-reduced-motion: reduce){ .d-part.cur b,.d-dim.hot span{animation:none} }
+.d-part b i{font-weight:700}
+
+.drag-parts .d-part.show{transition-delay:.7s}
+.chal-groups{display:flex;flex-direction:column;gap:8px}
+.chal-groups .presets button{font-size:13px}
+.chal-extra{font-size:15px;background:var(--hint-bg);border-radius:10px;padding:8px 10px}
+.chal-btns{flex-wrap:wrap}
+.ball.rot .lab{transform:rotate(-90deg)}
+.pairs-form{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.pairs-form label{font-size:13px;font-weight:700;color:var(--muted)}
+.pairs-form .row{display:flex;gap:8px;flex-wrap:wrap}
+.pairs-form input{flex:1;min-width:80px;border:1px solid var(--line);background:var(--chip);color:var(--ink);border-radius:12px;padding:8px 12px;font:600 17px var(--f-body);min-height:44px}
+.pairs-note{margin:0;font-size:13px;line-height:1.4;color:var(--muted);max-width:65ch}
+.pairs-form .why{align-self:flex-start;padding:0}
+.pchips{display:flex;flex-wrap:wrap;gap:6px}
+#chal .solver-text{font-size:15px}
+.pchip{border:2px dashed var(--line);border-radius:999px;padding:4px 10px;font-weight:700;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pchip.found{border:2px solid var(--good);background:var(--good-bg);color:var(--good)}
+.pchip.auto{border-style:solid;color:var(--ink)}
+.pchip small{font-weight:400}
+.pbox{position:absolute;inset:0;pointer-events:none;z-index:3}
+.pbox-frame{position:absolute;border:3px dashed var(--accent);border-radius:8px;transition:width .3s,height .3s,border-color .3s,background .3s}
+.pbox-frame.full{border-style:solid;border-color:var(--good);background:color-mix(in srgb,var(--good) 8%,transparent)}
+.pbox-frame b{position:absolute;left:0;top:calc(100% + 10px);white-space:nowrap;background:var(--paper);color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:3px 10px;font:700 14px/1.2 var(--f-body);box-shadow:var(--shadow)}
+.pbox-frame.full b{border-color:var(--good);color:var(--good)}
+.pbox .d-dim[hidden]{display:none}
+.pbox-handle{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.pbox-handle.grab{transition:none}
+@media (prefers-reduced-motion: reduce){ .pbox-frame,.pbox-handle{transition:none} }
+.csq-ov{position:absolute;inset:0;pointer-events:none;z-index:1}
+.csq-ov .d-dim{z-index:2}
+/* Try a value for x */
+.try-row{display:flex;align-items:center;justify-content:center;gap:14px}
+.try-val{font:700 26px/1 var(--f-display);font-variant-numeric:tabular-nums;min-width:4.5em;text-align:center}
+.try-val i{font-family:var(--f-body)}
+.tryov{position:absolute;inset:0;z-index:4;background:var(--paper);overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px;align-items:stretch}
+.tryov.wide{flex-direction:row;align-items:flex-start}
+.tside{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.tside h3{margin:0;font:700 13px/1.2 var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tside h3 b{font:800 18px/1 var(--f-display);color:var(--ink);letter-spacing:0;text-transform:none;margin-left:6px}
+.titems{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.titem{display:flex;flex-direction:column;align-items:center;gap:3px}
+.tgrid{display:grid;gap:1px;padding:3px;border:2px solid var(--fc);border-radius:9px;min-width:22px;min-height:22px}
+.tgrid.zero{border-style:dashed}
+.titem small{font:700 12px/1 var(--f-body);color:var(--muted);white-space:nowrap}
+.tball{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 33% 28%,rgb(255 255 255 / .7),transparent 30%),var(--c)}
+.tball.p{--c:var(--b-one)} .tball.n{--c:var(--b-neg)}
+.teq{align-self:center;font:800 30px/1 var(--f-display);color:var(--muted);padding:4px 8px}
+.teq.ok{color:var(--good)} .teq.no{color:var(--b-neg)}
+/* Step-by-step solver */
+.solver{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.solver-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.solver-tag{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.solver-tag.done{color:var(--good)}
+.solver-x{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--chip);font-size:20px;line-height:1;cursor:pointer}
+.solver-text{margin:0;font-size:16px;line-height:1.4;max-width:60ch;text-wrap:pretty}
+.solver .spacer{flex:1}
+.cube-labels{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.cube-label{position:absolute;left:0;top:0;opacity:0;background:var(--paper);color:var(--ink);border-radius:8px;padding:3px 7px;
+  font:700 14px/1.1 var(--f-display);white-space:nowrap;box-shadow:0 2px 6px rgb(0 0 0 / .2);transition:opacity .3s}
+.cube-label i{font-family:var(--f-body);font-style:italic}
+.cube-label sup{font-size:.6em}
+.cube-label.show{opacity:1}
+.cube-label.past{opacity:.6}
+.cube-label.cur{outline:2px solid var(--hl-c);animation:prod .5s cubic-bezier(.2,.8,.2,1)}
+.cube-label.dim{font-size:15px}
+.tx,.cube-label .tx{color:var(--hl-a)} .tn{color:var(--hl-c)} .tg{color:var(--hl-b)}
+.tx i{color:inherit}
+.expr .hot{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:5px}
+.expr .term{display:inline-block;padding:0 .18em;border:3px solid;border-color:var(--ct) var(--cs);border-radius:2px;line-height:1.1;background:color-mix(in srgb,var(--paper) 70%,transparent);animation:prod .45s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){ .expr .term{animation:none} }
+.dt.hl .orb,.d-hole.hl{animation:hlpulse 1.2s ease-in-out infinite}
+.dt.hl .orb{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--accent),0 4px 10px rgb(0 0 0 / .2)}
+.d-hole.hl{box-shadow:0 0 0 3px var(--paper),0 0 0 6px var(--accent)}
+@keyframes hlpulse{50%{scale:1.12}}
+@media (prefers-reduced-motion: reduce){ .dt.hl .orb,.d-hole.hl{animation:none} }
+.dt.over{z-index:4}
+/* Square demo */
+.board.demo-on > .ball,.board.demo-on .divider,.board.demo-on .side-label{display:none!important}
+.demo-layer{position:absolute;left:0;top:0;transform-origin:0 0;z-index:2;pointer-events:none;transition:transform .6s cubic-bezier(.3,.7,.2,1)}
+.demo-layer.still{transition:none}
+.expr.long{font-size:clamp(20px,5.2vw,30px)}
+@media (prefers-reduced-motion: reduce){ .demo-layer{transition:none} }
+.demo-stage{position:absolute}
+.dt{pointer-events:none;cursor:default;transition:transform .75s cubic-bezier(.3,.7,.2,1)}
+.dt .lab{transition:transform .75s cubic-bezier(.3,.7,.2,1)}
+.dt.rot .lab{transform:rotate(-90deg)}
+.dt.off .orb{transform:scale(0);opacity:0}
+.demo-layer.still .dt,.demo-layer.still .dt .lab,.demo-layer.still .orb{transition:none}
+.d-box{position:absolute;opacity:0;transition:opacity .4s;pointer-events:none}
+.d-box.show{opacity:1}
+.d-corner{border:2px dashed var(--accent);border-radius:6px;display:grid;place-items:center;font:800 15px/1.1 var(--f-display);color:var(--accent);text-align:center;background:color-mix(in srgb,var(--accent) 8%,transparent)}
+.d-full{border:3px solid var(--accent);border-radius:10px;margin:-5px;box-sizing:content-box;padding:2px}
+.d-dim{position:absolute;display:flex;align-items:center;justify-content:center;font:700 15px/1 var(--f-body);color:var(--dc,var(--accent));transition:opacity .4s,color .4s}
+.d-dim i{font-weight:700}
+.d-dim::before,.d-dim::after{content:"";flex:1;border-top:2px solid var(--dc,var(--accent));margin:0 5px}
+.d-dim.vert{flex-direction:column}
+.d-dim.vert::before,.d-dim.vert::after{border-top:0;border-left:2px solid var(--dc,var(--accent));margin:5px 0}
+.parts-on .d-dim{font-size:17px}
+.parts-on .d-dim::before,.parts-on .d-dim::after{border-width:3px}
+.parts-on .d-dim.fx{--dc:var(--hl-a)} .parts-on .d-dim.fn{--dc:var(--hl-c)} .parts-on .d-dim.fm{--dc:var(--side-c,var(--hl-c))}
+.parts-on .d-full{opacity:0}
+.d-dim.vert span{writing-mode:vertical-rl;transform:rotate(180deg)}
+.demo-ctl{display:flex;flex-direction:column;gap:8px}
+.demo-nav{display:flex;align-items:center;gap:8px}
+.dsteps{flex:1;display:flex;gap:5px;justify-content:center;min-width:0}
+.dsteps i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:background .2s,transform .2s}
+.dsteps i.on{background:var(--accent);transform:scale(1.25)}
+.dsteps i.done{background:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+@media (prefers-reduced-motion: reduce){ .dt,.dt .lab,.d-box{transition:none!important} }
+@media (min-width:700px){
+  .app{padding-block:18px 18px;gap:12px}
+  .tray{flex-direction:row;align-items:center}
+  .palette{flex:1}
+}
+@media (prefers-reduced-motion: reduce){
+  .ball,.orb,.bin,.toast{transition:none!important}
+  .ball.flip .orb,.ball.pulse .orb{animation:none}
+}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><h1>Algebra Ball Tiles</h1></div>
+    <button class="pill" id="buildBtn" aria-expanded="false" aria-controls="buildPanel">Build</button>
+    <button class="icon-btn" id="helpBtn" aria-label="How it works">?</button>
+  </header>
+
+  <section class="readout" aria-live="polite">
+    <div class="readrow">
+      <div class="seg" role="group" aria-label="Mode">
+        <button id="modeExpr" aria-pressed="true">Expression</button>
+        <button id="modeEq" aria-pressed="false">Equation</button>
+      </div>
+      <div class="seg demos" role="group" aria-label="Demos">
+        <span class="cap">Demos</span>
+        <button id="modePairs" aria-pressed="false">Factor pairs</button>
+        <button id="modeZero" aria-pressed="false">Zero pairs</button>
+        <button id="modeFactor" aria-pressed="false">Factorise</button>
+        <button id="modeDemo" aria-pressed="false">Square</button>
+        <button id="modeDrag" aria-pressed="false">Drag</button>
+        <button id="modeCube" aria-pressed="false">Cube</button>
+      </div>
+    </div>
+    <output id="expr" class="expr"></output>
+    <p id="status" class="status"></p>
+  </section>
+
+  <section id="buildPanel" class="build" hidden>
+    <form id="buildForm">
+      <label for="buildInput">Type an expression or equation to lay out as balls</label>
+      <div class="row">
+        <input id="buildInput" placeholder="e.g. 3x − 4 = x + 6" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button class="go" type="submit">Build</button>
+      </div>
+      <p id="buildErr" class="err"></p>
+    </form>
+    <div class="presets" id="presets">
+      <span class="tag">Simplify</span>
+      <button type="button">3x + 2 − x − 5</button>
+      <button type="button">x² + 2x − x² + 1</button>
+      <button type="button">2x² − 3x + 4 + x − 1</button>
+      <span class="tag">Solve</span>
+      <button type="button">2x + 3 = 7</button>
+      <button type="button">3x − 4 = x + 6</button>
+      <button type="button">−2x = 8</button>
+      <button type="button">5 = x − 2</button>
+      <button type="button">4x + 1 = 2x + 9</button>
+    </div>
+    <div class="chal-groups" id="chalList"></div>
+  </section>
+
+  <div id="board" class="board" aria-label="Workspace">
+    <div id="divider" class="divider" hidden><span>=</span></div>
+    <div id="labL" class="side-label" hidden>Left side</div>
+    <div id="labR" class="side-label" hidden>Right side</div>
+    <div id="bin" class="bin">Drop here to remove</div>
+    <div id="toast" class="toast" role="status"></div>
+  </div>
+
+  <div class="actions" id="actions" role="toolbar" aria-label="Actions">
+    <button class="act" id="undoBtn"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>Undo</button>
+    <button class="act primary" id="pairsBtn"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/></svg>Cancel pairs</button>
+    <button class="act" id="tidyBtn"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h6"/></svg>Tidy</button>
+    <button class="act" id="flipBtn" hidden><svg viewBox="0 0 24 24"><path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/></svg>Flip all</button>
+    <button class="act primary" id="divBtn" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><path d="M4 12h16"/><circle cx="12" cy="19" r="1.6"/></svg>Divide</button>
+    <button class="act primary" id="simpBtn" hidden><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="5"/><circle cx="16" cy="12" r="5"/></svg>Simplify step by step</button>
+    <button class="act primary" id="csqBtn" hidden><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 13h9V4"/></svg>Complete the square</button>
+    <button class="act primary" id="solveBtn" hidden><svg viewBox="0 0 24 24"><path d="M4 18h4l3-12h9"/><path d="M14 13l5 5M19 13l-5 5"/></svg>Solve step by step</button>
+    <button class="act" id="sugBtn" hidden><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Suggest</button>
+    <button class="act" id="tryBtn" hidden><svg viewBox="0 0 24 24"><path d="M5 5l6 6M11 5l-6 6"/><path d="M14 9h6M14 15h6"/></svg>Try x =</button>
+    <button class="act" id="clearBtn"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>Clear</button>
+  </div>
+
+  <div class="solver" id="sugPanel" hidden>
+    <div class="solver-head">
+      <span class="solver-tag">Suggested approach</span>
+      <button class="solver-x" id="sugClose" aria-label="Close suggestion">×</button>
+    </div>
+    <p class="solver-text" id="sugText"></p>
+    <p class="solver-text chal-extra" id="sugMore" hidden></p>
+    <div class="demo-nav chal-btns" id="sugBtns"></div>
+  </div>
+
+  <div class="solver" id="chal" hidden>
+    <div class="solver-head">
+      <span class="solver-tag" id="chalTag">Challenge</span>
+      <button class="solver-x" id="chalClose" aria-label="Close challenge">×</button>
+    </div>
+    <p class="solver-text" id="chalText"></p>
+    <div class="pchips" id="chalProg" hidden></div>
+    <p class="solver-text chal-extra" id="chalExtra" hidden></p>
+    <div class="demo-nav chal-btns">
+      <button class="act" id="chalHint">Hint</button>
+      <button class="act" id="chalAnswer">Show answer</button>
+      <span class="spacer"></span>
+      <button class="act primary" id="chalDemo"><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>Watch the demo</button>
+    </div>
+  </div>
+
+  <div class="solver" id="tryPanel" hidden>
+    <div class="solver-head">
+      <span class="solver-tag">Try a value for x</span>
+      <button class="solver-x" id="tryClose" aria-label="Close try a value">×</button>
+    </div>
+    <div class="try-row">
+      <button class="st-btn minus" id="tryDown" aria-label="Make x one smaller">−</button>
+      <span class="try-val"><i>x</i> = <output id="tryV">2</output></span>
+      <button class="st-btn plus" id="tryUp" aria-label="Make x one bigger">+</button>
+    </div>
+    <p class="solver-text" id="tryText"></p>
+    <p class="pairs-note">x goes from −6 to 6, so a whole x² square (up to 36 balls) still fits on a phone.</p>
+  </div>
+
+  <div class="solver" id="solver" hidden>
+    <div class="solver-head">
+      <span class="solver-tag" id="solveTag">Step 1</span>
+      <button class="solver-x" id="solveClose" aria-label="Close step-by-step solver">×</button>
+    </div>
+    <p class="solver-text" id="solveText"></p>
+    <div class="demo-nav">
+      <button class="act" id="solveRestart"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Restart</button>
+      <span class="spacer"></span>
+      <button class="act" id="solvePlay"><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg><span>Play all</span></button>
+      <button class="act primary" id="solveNext"><span>Do this step</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+
+  <div class="demo-ctl" id="demoCtl" hidden>
+    <div class="presets" id="demoEx" aria-label="Examples"></div>
+    <form class="pairs-form" id="pairsForm" hidden novalidate>
+      <label for="pairsN">Factorise your own number, from 1 to 36</label>
+      <div class="row">
+        <input id="pairsN" type="number" min="1" max="36" step="1" inputmode="numeric" placeholder="e.g. 24">
+        <button class="go" type="submit">Factorise</button>
+        <button class="act" type="button" id="pairsTurn">Your turn</button>
+      </div>
+      <p class="pairs-note">Why stop at 36? Every number can be laid out as one long row, 1 × n. With 36 balls that row already shrinks each ball to about a third of its size on a phone, and rectangles like 2 × 18 are too long to build by hand on the screen. Bigger numbers work exactly the same way, so try them on paper.</p>
+      <p class="err" id="pairsErr"></p>
+      <button class="why" type="button" id="pairsBack" hidden>Back to 12, 9 and 7</button>
+    </form>
+    <div class="seg gmode" id="gMode" role="group" aria-label="Show the shortfall as" hidden>
+      <span class="cap">Shortfall</span>
+      <button data-m="pairs" aria-pressed="true">Zero pairs</button>
+      <button data-m="holes" aria-pressed="false">Missing ones</button>
+    </div>
+    <div class="demo-nav" id="stepNav">
+      <button class="act" id="dBack"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Back</button>
+      <div class="dsteps" id="dSteps" aria-hidden="true"></div>
+      <button class="act" id="dPlay"><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg><span>Play</span></button>
+      <button class="act primary" id="dNext"><span>Next</span><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+
+    <div class="demo-nav" id="dragNav" hidden>
+      <button class="act" id="gReset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Reset</button>
+      <div class="dsteps" id="gSteps" aria-hidden="true"></div>
+      <button class="act primary" id="gShow"><svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg><span>Show me</span></button>
+    </div>
+  </div>
+
+  <div class="tray" id="tray">
+    <div class="tray-opts">
+      <div class="seg target" id="target" role="group" aria-label="Add to" hidden>
+        <span class="cap">Add to</span>
+        <button data-side="L" aria-pressed="false">Left</button>
+        <button data-side="both" aria-pressed="true">Both</button>
+        <button data-side="R" aria-pressed="false">Right</button>
+      </div>
+      <div class="seg pmmode" id="pmMode" role="group" aria-label="What the + and − buttons do">
+        <span class="cap">± buttons</span>
+        <button data-m="count" aria-pressed="true" title="+ adds a tile, − takes one away">Count</button>
+        <button data-m="zero" aria-pressed="false" title="− adds the negative tile, making a zero pair">Zero pairs</button>
+      </div>
+    </div>
+    <div class="palette" id="palette">
+      <div class="stepper"><button class="st-btn minus" data-t="x2" data-s="-1" aria-label="Subtract x squared: add a negative x squared tile">−</button><button class="tb" data-t="x2" data-s="1" aria-label="Add x squared"></button><button class="st-btn plus" data-t="x2" data-s="1" aria-label="Add x squared">+</button></div>
+      <div class="stepper"><button class="st-btn minus" data-t="x" data-s="-1" aria-label="Subtract x: add a negative x tile">−</button><button class="tb" data-t="x" data-s="1" aria-label="Add x"></button><button class="st-btn plus" data-t="x" data-s="1" aria-label="Add x">+</button></div>
+      <div class="stepper"><button class="st-btn minus" data-t="one" data-s="-1" aria-label="Subtract one: add a negative one ball">−</button><button class="tb" data-t="one" data-s="1" aria-label="Add one"></button><button class="st-btn plus" data-t="one" data-s="1" aria-label="Add one">+</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-back" id="help" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+    <h2 id="helpTitle">How the tiles work</h2>
+    <ul>
+      <li><span class="dotc" style="--c:var(--b-x2);border-radius:4px"></span><span><b>Ball, rectangle, square</b>The ball is 1. The rectangle is x: one ball wide and an unknown length long. The square is x²: x long on each side. Red pieces are negative.</span></li>
+      <li><span class="dotc" style="--c:var(--b-x)"></span><span><b>Add and subtract</b>Tap + next to a tile to add one. What − does depends on the ± buttons switch above the tray. Count: − takes a tile away (or adds a negative one if there's nothing to take). Zero pairs: − adds the negative tile, which cancels a positive one as a zero pair. The switch works the same in Expression and Equation mode. You can also drag a tile, + or − onto the board to place it exactly.</span></li>
+      <li><span class="dotc" style="--c:var(--b-neg)"></span><span><b>Zero pairs</b>A tile and its opposite add up to 0. Drop a ball onto its opposite (x onto −x) and both disappear. Cancel pairs does every pair at once. The Zero pairs demo shows why they work.</span></li>
+      <li><span class="dotc" style="--c:var(--b-one)"></span><span><b>Move, turn, flip, remove</b>Drag to move; pieces snap together when they're close. Tap an x tile to stand it upright. Double-tap to flip a piece's sign. Drag to the bin at the bottom to remove.</span></li>
+      <li><span class="dotc" style="--c:var(--accent)"></span><span><b>Suggested approach</b>After you Build an expression or equation, for example one from your homework, a card suggests a way to tackle it, with a button to start. Tap Suggest any time to ask again.</span></li>
+      <li><span class="dotc" style="--c:var(--b-one)"></span><span><b>Try a value for x</b>Tap Try x = and pick a number. Each x tile turns into a row of that many balls and each x² tile into a square of them, so you can count the value, or check whether both sides of an equation balance.</span></li>
+      <li><span class="dotc" style="--c:var(--b-x2);border-radius:4px"></span><span><b>Complete the square</b>In Expression mode, with one x² tile and an even number of x tiles on the board, tap Complete the square. Your own tiles move step by step into a square, with zero pairs added if the corner needs them.</span></li>
+      <li><span class="dotc" style="--c:var(--b-x2)"></span><span><b>Equations</b>Add to Both sides to keep the balance. Dragging a ball across the = sign flips its sign. Divide shares both sides into equal groups. If the balls don't share evenly, the leftovers are cut into slices, so an answer like x = 3½ shows as 3 balls and half a ball.</span></li>
+    </ul>
+    <button class="go close" id="helpClose">Got it</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait = ms => new Promise(r => setTimeout(r, reduce ? 0 : ms));
+// U = one ball across. L = the length of x: deliberately not a whole number of balls, because x is unknown.
+const U = 30, L = 74;
+const T = { x2:{w:L, h:L, lab:'x²', name:'x squared tile'}, x:{w:L, h:U, lab:'x', name:'x tile'}, one:{w:U, h:U, lab:'1', name:'one ball'} };
+const touching = (a, b, k = .6) => a.t === b.t && Math.abs(a.x - b.x) < T[a.t].w * k && Math.abs(a.y - b.y) < T[a.t].h * k;
+const ORDER = ['x2','x','one'];
+const val = b => b.f ? b.f[0] / b.f[1] : 1;            // a fraction ball is worth f[0]/f[1] of a whole ball
+const GLYPH = {'1/2':'½','1/3':'⅓','2/3':'⅔','1/4':'¼','3/4':'¾','1/5':'⅕','2/5':'⅖','3/5':'⅗','4/5':'⅘','1/6':'⅙','5/6':'⅚','1/8':'⅛','3/8':'⅜','5/8':'⅝','7/8':'⅞'};
+function rat(v){
+  const neg = v < 0; v = Math.abs(v);
+  let d = 1; while (d < 97 && Math.abs(v*d - Math.round(v*d)) > 1e-6) d++;
+  const num = Math.round(v*d), w = Math.floor(num/d), r = num - w*d, sg = neg ? '−' : '';
+  const fr = r ? (GLYPH[`${r}/${d}`] || `${r}/${d}`) : '';
+  const mixed = sg + (w ? w + (r ? (GLYPH[`${r}/${d}`] ? fr : ' ' + fr) : '') : (fr || '0'));
+  return { mixed, improper: sg + (d === 1 ? num : `${num}/${d}`), isFrac: d > 1, hasWhole: w > 0 };
+}
+const KEY = 'algebra-ball-tiles-v2';
+
+let balls = [], nextId = 1, mode = 'expr', target = 'both', history = [], busy = false;
+const board = $('#board'), els = new Map();
+
+/* ---------- geometry ---------- */
+function regions(){
+  const w = board.clientWidth, h = board.clientHeight;
+  if (mode === 'expr') return { split:null, L:{x0:0,y0:0,x1:w,y1:h} };
+  if (w >= 560) return { split:'v', L:{x0:0,y0:0,x1:w/2,y1:h}, R:{x0:w/2,y0:0,x1:w,y1:h} };
+  return { split:'h', L:{x0:0,y0:0,x1:w,y1:h/2}, R:{x0:0,y0:h/2,x1:w,y1:h} };
+}
+function sideAt(x, y, rg = regions()){
+  if (!rg.split) return 'L';
+  return rg.split === 'v' ? (x < rg.L.x1 ? 'L' : 'R') : (y < rg.L.y1 ? 'L' : 'R');
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+function tidy(){
+  const rg = regions();
+  for (const side of rg.split ? ['L','R'] : ['L']){
+    const R = rg[side], pad = 14, gap = 8, top = rg.split ? 34 : 14;
+    const list = balls.filter(b => b.side === side);
+    let y = R.y0 + top;
+    for (const t of ORDER){
+      const grp = list.filter(b => b.t === t).sort((a,b) => b.s - a.s);
+      if (!grp.length) continue;
+      const d = T[t].w, dh = T[t].h; let x = R.x0 + pad, prev = grp[0].s;
+      for (const b of grp){
+        if (b.s !== prev){ x += 10; prev = b.s; }
+        if (x + d > R.x1 - pad){ x = R.x0 + pad; y += dh + gap; }
+        b.rot = false; b.x = x + d/2; b.y = y + dh/2; x += d + gap;
+      }
+      y += dh + gap + 8;
+    }
+  }
+}
+
+function freeSpot(side, t){
+  const rg = regions(), R = rg[side] || rg.L, pad = 12, top = rg.split ? 30 : 10;
+  const hw = T[t].w/2, hh = T[t].h/2;
+  const clear = (x, y) => balls.every(o => Math.abs(o.x - x) >= T[o.t].w/2 + hw + 4 || Math.abs(o.y - y) >= T[o.t].h/2 + hh + 4);
+  for (let y = R.y0 + top + hh; y <= R.y1 - pad - hh; y += 7){
+    for (let x = R.x0 + pad + hw; x <= R.x1 - pad - hw; x += 7){
+      if (clear(x, y)) return {x, y};
+    }
+  }
+  return { x: R.x0 + pad + hw + Math.random()*Math.max(1, R.x1 - R.x0 - 2*pad - 2*hw),
+           y: R.y0 + top + hh + Math.random()*Math.max(1, R.y1 - R.y0 - top - pad - 2*hh) };
+}
+
+/* ---------- rendering ---------- */
+function makeEl(b){
+  const el = document.createElement('div');
+  el.className = 'ball enter';
+  el.dataset.id = b.id;
+  el.setAttribute('role','img');
+  el.innerHTML = '<span class="orb"><span class="lab"></span></span>';
+  board.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove('enter')));
+  return el;
+}
+function paint(el, b){
+  const {w, h} = T[b.t];
+  el.dataset.t = b.t;
+  el.classList.toggle('neg', b.s < 0);
+  el.style.setProperty('--w', w + 'px'); el.style.setProperty('--h', h + 'px');
+  el.classList.toggle('rot', !!b.rot);
+  el.style.transform = `translate(${b.x - w/2}px, ${b.y - h/2}px)${b.rot ? ' rotate(90deg)' : ''}`;
+  el.classList.toggle('frac', !!b.f);
+  if (b.f){ el.style.setProperty('--pct', b.f[0]/b.f[1]*100); el.style.setProperty('--den', b.f[1]); }
+  el.querySelector('.lab').textContent = (b.s < 0 ? '−' : '') + (b.f ? rat(b.f[0]/b.f[1]).mixed : T[b.t].lab);
+  el.setAttribute('aria-label', (b.s < 0 ? 'negative ' : '') + (b.f ? `${b.f[0]} ${b.f[1] === 2 ? 'half' : 'out of ' + b.f[1]} of a ball` : T[b.t].name));
+}
+function render(){
+  const seen = new Set();
+  for (const b of balls){
+    let el = els.get(b.id);
+    if (!el){ el = makeEl(b); els.set(b.id, el); }
+    paint(el, b); seen.add(b.id);
+  }
+  for (const [id, el] of els) if (!seen.has(id)){ el.remove(); els.delete(id); }
+  drawFrame(); updateUI(); save();
+  if (solver.on && !solver.running) solverUI();
+}
+function drawFrame(){
+  const rg = regions(), div = $('#divider'), lL = $('#labL'), lR = $('#labR');
+  const on = !!rg.split; div.hidden = lL.hidden = lR.hidden = !on;
+  if (!on) return;
+  div.className = 'divider ' + rg.split;
+  div.style.left = div.style.top = '';
+  if (rg.split === 'v'){ div.style.left = rg.L.x1 + 'px'; }
+  else { div.style.top = rg.L.y1 + 'px'; }
+  lL.style.left = (rg.L.x0 + 14) + 'px'; lL.style.top = (rg.L.y0 + 12) + 'px';
+  lR.style.left = (rg.R.x0 + 14 + (rg.split === 'v' ? 8 : 0)) + 'px'; lR.style.top = (rg.R.y0 + 12 + (rg.split === 'h' ? 6 : 0)) + 'px';
+}
+
+/* ---------- maths ---------- */
+function poly(side){
+  const p = {x2:0, x:0, one:0};
+  for (const b of balls) if (side == null || b.side === side) p[b.t] += b.s * val(b);
+  return p;
+}
+function fmt(p){
+  let out = '';
+  for (const t of ORDER){
+    const n = p[t]; if (!n) continue;
+    const a = Math.abs(n);
+    const body = t === 'one' ? rat(a).mixed.replace(' ', '\u2009') : (a === 1 ? '' : a) + (t === 'x' ? '<i>x</i>' : '<i>x</i><sup>2</sup>');
+    out += out ? (n < 0 ? ' − ' : ' + ') + body : (n < 0 ? '−' : '') + body;
+  }
+  return out || '0';
+}
+function pairCount(){
+  let n = 0;
+  for (const side of ['L','R']) for (const t of ORDER){
+    const g = balls.filter(b => b.side === side && b.t === t && !b.f);
+    n += Math.min(g.filter(b => b.s > 0).length, g.filter(b => b.s < 0).length);
+  }
+  return n;
+}
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+function oneSign(list){ return list.every(b => b.s === list[0].s); }
+function isolation(){
+  if (mode !== 'eq') return null;
+  for (const [xs, us] of [['L','R'],['R','L']]){
+    const xB = balls.filter(b => b.side === xs), uB = balls.filter(b => b.side === us);
+    if (!xB.length || !xB.every(b => b.t === 'x') || !oneSign(xB)) continue;
+    if (!uB.every(b => b.t === 'one') || !oneSign(uB)) continue;
+    const n = xB.length * xB[0].s, c = uB.reduce((a, b) => a + b.s * val(b), 0);
+    return { xs, us, xB, uB, n, c };
+  }
+  return null;
+}
+function status(){
+  if (!balls.length) return ['Tap a ball below to add it, or use Build.', ''];
+  const pairs = pairCount();
+  const pairMsg = `${pairs} zero pair${pairs > 1 ? 's' : ''} ready to cancel.`;
+  if (mode === 'expr') return pairs ? [pairMsg, 'hint'] : ['Fully simplified. No zero pairs left.', 'good'];
+  if (pairs) return [pairMsg, 'hint'];
+  const dp = divPlan();
+  if (dp && dp.whole && !isolation()) return [`Every group of tiles splits evenly into ${dp.n}. You can Divide both sides by ${dp.n}.`, 'hint'];
+  const iso = isolation();
+  if (iso){
+    const {n, c} = iso;
+    if (n === 1){ const r = rat(c); return [`Solved: x = ${r.mixed}${r.isFrac && r.hasWhole ? ` (= ${r.improper})` : ''}`, 'good']; }
+    if (n === -1) return ['−x on its own. Tap Flip all to turn it into x.', 'hint'];
+    if (Number.isInteger(c) && c % n === 0) return [`${Math.abs(n)} x tiles. Divide both sides into ${Math.abs(n)} equal groups.`, 'hint'];
+    return [`${Math.abs(n)} x tiles. Divide both sides into ${Math.abs(n)} groups. The leftover balls get cut into slices.`, 'hint'];
+  }
+  const pL = poly('L'), pR = poly('R');
+  if (pL.x2 && pL.x2 === pR.x2) return ['x² is on both sides. Add the opposite x² tile to both sides so they cancel.', 'hint'];
+  if (pL.x2 || pR.x2) return ['This is a quadratic equation. Tap Suggest for how to approach it.', ''];
+  if (pL.x && pR.x) return ['x is on both sides. Add the opposite x to both sides to clear one.', ''];
+  if ((pL.x && pL.one) || (pR.x && pR.one)) return ['Clear the units from the x side: add their opposite to both sides.', ''];
+  return ['Keep it balanced: add the same balls to both sides.', ''];
+}
+function updateUI(){
+  if (demo.on){ demoUI(); return; }
+  const pL = poly('L'), pR = poly('R');
+  $('#expr').classList.remove('long');
+  if (solver.on && (solver.engine === 'csq' || solver.engine === 'simp') && csq.result){ $('#expr').innerHTML = csq.result; $('#expr').classList.toggle('long', txt(csq.result).length > 24); }
+  else $('#expr').innerHTML = mode === 'eq' ? `${fmt(pL)}<span class="eq">=</span>${fmt(pR)}` : fmt(poly(null));
+  const [msg, tone] = status(), st = $('#status');
+  st.textContent = msg; st.className = 'status' + (tone ? ' ' + tone : '');
+  // the Your turn and complete-the-square panels say what to do, so the hint line steps aside
+  st.hidden = (typeof chal !== 'undefined' && chal.on?.kind === 'pairs') || (solver.on && (solver.engine === 'csq' || solver.engine === 'simp'));
+  if (/zero pair/.test(msg)){ const why = document.createElement('button'); why.className = 'why'; why.type = 'button'; why.textContent = 'How do zero pairs work?'; why.onclick = () => enterDemo('zero'); st.append(' ', why); }
+  $('#undoBtn').disabled = !history.length;
+  $('#pairsBtn').disabled = !pairCount();
+  $('#clearBtn').disabled = !balls.length;
+  $('#tidyBtn').disabled = !balls.length;
+  const eq = mode === 'eq';
+  $('#flipBtn').hidden = $('#divBtn').hidden = $('#target').hidden = !eq;
+  $('#solveBtn').hidden = !eq || solver.on;
+  $('#csqBtn').hidden = eq || solver.on || !balls.some(b => b.t === 'x2');
+  $('#simpBtn').hidden = eq || solver.on || !pairCount();
+  $('#tryBtn').hidden = solver.on || !balls.some(b => b.t === 'x' || b.t === 'x2');
+  $('#sugBtn').hidden = solver.on || !balls.length;
+  $('#solveBtn').disabled = !balls.length;
+  $('#divBtn').disabled = !divPlan();
+  $('#flipBtn').disabled = !balls.length;
+  $('#modeExpr').setAttribute('aria-pressed', !eq);
+  $('#modeEq').setAttribute('aria-pressed', eq);
+  $('#modeDemo').setAttribute('aria-pressed', false);
+  $('#modeCube').setAttribute('aria-pressed', false);
+  $('#modeFactor').setAttribute('aria-pressed', false);
+  $('#modeDrag').setAttribute('aria-pressed', false);
+  $('#modeZero').setAttribute('aria-pressed', false);
+  $('#modePairs').setAttribute('aria-pressed', false);
+  document.querySelectorAll('#target button').forEach(b => b.setAttribute('aria-pressed', b.dataset.side === target));
+}
+
+/* ---------- state ---------- */
+function snap(){ return JSON.stringify({balls, mode}); }
+function pushHistory(s = snap()){ history.push(s); if (history.length > 80) history.shift(); }
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({balls, mode, target, nextId})); } catch(e){} }
+function load(){
+  try { const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (d && Array.isArray(d.balls)){ balls = d.balls; mode = d.mode === 'eq' ? 'eq' : 'expr'; target = d.target || 'both'; nextId = d.nextId || 1 + balls.length * 2; return true; }
+  } catch(e){}
+  return false;
+}
+let toastTimer;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1600);
+}
+function newBall(t, s, side, x, y){ const b = {id: nextId++, t, s, side, x, y}; balls.push(b); return b; }
+
+async function vanish(ids){
+  ids.forEach(id => els.get(id)?.classList.add('vanish'));
+  await wait(230);
+  balls = balls.filter(b => !ids.includes(b.id));
+}
+function zeroPop(b){
+  const z = document.createElement('div');
+  z.className = 'zero-pop'; z.textContent = '0';
+  z.style.left = b.x + 'px'; z.style.top = b.y + 'px';
+  board.appendChild(z); setTimeout(() => z.remove(), 900);
+}
+// The negative piece slides on top of its positive partner, a "0" pops up, then both disappear.
+async function slideCancel(pairs){
+  for (const [p, n] of pairs){ n.x = p.x; n.y = p.y; els.get(n.id)?.classList.add('slide-over'); }
+  render();
+  await wait(620);
+  pairs.forEach(([p]) => zeroPop(p));
+  await wait(120);
+  await vanish(pairs.flat().map(b => b.id));
+}
+async function cancelPair(a, b){
+  busy = true;
+  await slideCancel([a.s > 0 ? [a, b] : [b, a]]);
+  busy = false; render();
+}
+async function cancelAll(){
+  if (busy || !pairCount()) return;
+  busy = true; pushHistory();
+  const pairs = [];
+  for (const side of ['L','R']) for (const t of ORDER){
+    const g = balls.filter(b => b.side === side && b.t === t && !b.f);
+    const pos = g.filter(b => b.s > 0), neg = g.filter(b => b.s < 0);
+    for (let i = 0; i < Math.min(pos.length, neg.length); i++) pairs.push([pos[i], neg[i]]);
+  }
+  await slideCancel(pairs);
+  tidy(); busy = false; render();
+  toast(`${pairs.length} zero pair${pairs.length > 1 ? 's' : ''} cancelled`);
+}
+function flipAll(){
+  if (busy || !balls.length) return;
+  pushHistory();
+  balls.forEach(b => { b.s = -b.s; const el = els.get(b.id); if (el){ el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip'); } });
+  render();
+}
+// How Divide can share the board: evenly (every kind of tile splits into n), or with slices when only
+// x tiles are on one side and the leftover whole balls on the other side don't split evenly.
+function divPlan(){
+  if (mode !== 'eq' || pairCount() || balls.some(b => b.f)) return null;
+  const pL = poly('L'), pR = poly('R');
+  const xs = [pL.x, pR.x].filter(Boolean).map(Math.abs);
+  if (!xs.length) return null;
+  const n = xs.reduce((a, b) => gcd(a, b));
+  if (n > 1 && [pL.x2, pL.x, pL.one, pR.x2, pR.x, pR.one].every(v => v % n === 0)) return { n, whole:true };
+  const iso = isolation();
+  if (iso && Math.abs(iso.n) > 1) return { n: Math.abs(iso.n), whole:false, iso };
+  return null;
+}
+async function divide(){
+  const plan = divPlan();
+  if (busy || !plan) return;
+  busy = true; pushHistory();
+  const n = plan.n, keep = new Set(), groups = new Map(), sliced = [];
+  let frac = null;
+  for (const side of ['L','R']) for (const t of ORDER){
+    const list = balls.filter(b => b.side === side && b.t === t);
+    if (!list.length) continue;
+    const q = Math.floor(list.length / n), r = list.length - q*n;
+    list.forEach((b, i) => {
+      if (i < q*n){ groups.set(b.id, i % n); if (i % n === 0) keep.add(b.id); }
+      else sliced.push(b);
+    });
+    if (r){ keep.add(list[q*n].id); frac = { b: list[q*n], r }; }
+  }
+  // show the sharing: group one stays bright, the other groups fade, leftover balls are cut into n slices
+  for (const b of balls){
+    const el = els.get(b.id); if (!el) continue;
+    el.classList.toggle('keep-g', groups.get(b.id) === 0);
+    el.classList.toggle('ghost-g', (groups.get(b.id) || 0) > 0);
+  }
+  for (const b of sliced){ const el = els.get(b.id); el?.style.setProperty('--den', n); el?.classList.add('slicing'); }
+  await wait(sliced.length ? 1300 : 900);
+  if (frac){ const g = gcd(frac.r, n); frac.b.f = [frac.r / g, n / g]; }
+  await vanish(balls.filter(b => !keep.has(b.id)).map(b => b.id));
+  els.forEach(el => el.classList.remove('keep-g', 'ghost-g', 'slicing'));
+  tidy(); busy = false; render();
+  toast(frac ? `Shared into ${n} groups, with slices` : `Shared into ${n} equal groups`);
+}
+function setMode(m, withHistory = true){
+  if (m === mode) return;
+  if (m === 'eq') closeChallenge();
+  if (withHistory) pushHistory();
+  mode = m;
+  if (mode === 'expr') balls.forEach(b => b.side = 'L');
+  tidy(); render();
+}
+
+/* ---------- build ---------- */
+function parseSide(s){
+  s = s.replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/²/g,'^2').replace(/\*\*2/g,'^2').replace(/X/g,'x').replace(/\*/g,'');
+  if (s === '' || s === '0') return [];
+  const terms = s.match(/[+-]?[^+-]+/g);
+  if (!terms || terms.join('') !== s) return null;
+  const out = [];
+  for (const tm of terms){
+    const m = tm.match(/^([+-]?)(\d*)(x\^2|x2|x)?$/);
+    if (!m || (!m[2] && !m[3])) return null;
+    const n = m[2] === '' ? 1 : parseInt(m[2], 10);
+    if (n === 0) continue;
+    out.push({ t: m[3] === 'x' ? 'x' : m[3] ? 'x2' : 'one', s: m[1] === '-' ? -1 : 1, n });
+  }
+  return out;
+}
+// Why a typed expression can't go on the board, and what to do instead
+function unsupportedReason(str){
+  const t = str.replace(/\s+/g, '');
+  if (/x(\^3|³|\*\*3)/i.test(t)) return 'The board has no x³ tiles. To see how a cube like (x + 2)³ is built, open the Cube demo; factorise cubics on paper.';
+  if (/x(\^|\*\*)\d|x[⁴⁵⁶⁷⁸⁹]/i.test(t)) return 'The board only has x² and x tiles, so powers above 2 can’t be shown. Work those on paper.';
+  if (/\//.test(t)) return 'Fractions can’t be shown inside an equation yet. On paper, multiply every term on both sides by the bottom number to clear the fraction, then type the new equation here.';
+  if (/[a-wyz]/i.test(t)) return 'The board only has x tiles. Use x for the unknown, for example 2x + 3 = 7.';
+  if (/\(|\)/.test(t)) return 'Brackets can’t be typed in yet. Multiply them out first, for example 2(x + 3) becomes 2x + 6.';
+  if (/\d\.\d/.test(t)) return 'Decimals can’t be shown with whole tiles. Try whole numbers, or multiply both sides by 10 first.';
+  return "That couldn't be read. Try something like 2x + 3 = 7 or x² − 4x + 1.";
+}
+function build(str){
+  closeSolver(); exitDemo(); closeChallenge(); closeTry(); closeSuggest();
+  const err = $('#buildErr'); err.textContent = '';
+  const parts = str.split('=');
+  if (parts.length > 2){ err.textContent = 'Use one equals sign at most.'; return false; }
+  const sides = parts.map(parseSide);
+  if (sides.some(s => s === null)){ err.textContent = unsupportedReason(str); return false; }
+  const total = sides.flat().reduce((a, t) => a + t.n, 0);
+  if (total > 60){ err.textContent = `That makes ${total} balls. Keep it to 60 or fewer so they fit on the board.`; return false; }
+  pushHistory();
+  balls.forEach(b => els.get(b.id)?.remove()); els.clear();
+  balls = [];
+  mode = parts.length === 2 ? 'eq' : 'expr';
+  sides.forEach((terms, i) => terms.forEach(tm => { for (let k = 0; k < tm.n; k++) newBall(tm.t, tm.s, i ? 'R' : 'L', 0, 0); }));
+  tidy(); render();
+  return true;
+}
+
+/* ---------- board dragging ---------- */
+const bin = $('#bin');
+let drag = null, lastTap = {id:null, time:0};
+function overBin(cx, cy){
+  const r = bin.getBoundingClientRect();
+  return cx > r.left - 16 && cx < r.right + 16 && cy > r.top - 16 && cy < r.bottom + 16;
+}
+board.addEventListener('pointerdown', e => {
+  const el = e.target.closest('.ball');
+  if (!el || busy || chal.on?.kind === 'pairs') return;
+  const b = balls.find(x => x.id === +el.dataset.id); if (!b) return;
+  e.preventDefault();
+  el.setPointerCapture(e.pointerId);
+  const br = board.getBoundingClientRect();
+  drag = { b, el, dx: e.clientX - br.left - b.x, dy: e.clientY - br.top - b.y, sx: e.clientX, sy: e.clientY, moved:false, before: snap(), side: b.side };
+});
+board.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const {b, el} = drag;
+  if (!drag.moved && Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) < 6) return;
+  if (!drag.moved){ drag.moved = true; el.classList.add('dragging'); bin.classList.add('show'); }
+  const br = board.getBoundingClientRect(), hw = T[b.t].w/2, hh = T[b.t].h/2;
+  b.x = clamp(e.clientX - br.left - drag.dx, hw, br.width - hw);
+  b.y = clamp(e.clientY - br.top - drag.dy, hh, br.height - hh);
+  el.style.transform = `translate(${b.x - hw}px, ${b.y - hh}px)`;
+  bin.classList.toggle('hot', overBin(e.clientX, e.clientY));
+});
+let tapTimer = 0;
+const dims = b => b.rot ? [T[b.t].h, T[b.t].w] : [T[b.t].w, T[b.t].h];
+// When a dropped piece lands close to another, line their edges up so squares and rectangles close neatly.
+function snapPiece(b){
+  const [w, h] = dims(b), R = 12;
+  // butting edges together beats lining edges up, so they are collected separately
+  const adjX = [], alnX = [], adjY = [], alnY = [];
+  for (const o of balls){
+    if (o === b || o.side !== b.side) continue;
+    const [ow, oh] = dims(o);
+    const near = (a0, a1, b0, b1) => a0 < b1 + R && a1 > b0 - R;
+    const l = b.x - w/2, r = b.x + w/2, t = b.y - h/2, btm = b.y + h/2;
+    const ol = o.x - ow/2, or = o.x + ow/2, ot = o.y - oh/2, ob = o.y + oh/2;
+    const overlapY = t < ob && btm > ot, overlapX = l < or && r > ol;
+    const stackedY = Math.abs(t - ob) < R || Math.abs(btm - ot) < R, stackedX = Math.abs(l - or) < R || Math.abs(r - ol) < R;
+    // side by side: butt the edges together; one above the other: line up their left or right edges (and the same for y)
+    if (overlapY) adjX.push(or - l, ol - r);
+    if (stackedY && near(l, r, ol, or)) alnX.push(ol - l, or - r);
+    if (overlapX) adjY.push(ob - t, ot - btm);
+    if (stackedX && near(t, btm, ot, ob)) alnY.push(ot - t, ob - btm);
+  }
+  const pick = (a, b2) => { for (const list of [a, b2]){ const ok = list.filter(v => Math.abs(v) <= R); if (ok.length) return ok.reduce((m, v) => Math.abs(v) < Math.abs(m) ? v : m); } return 0; };
+  b.x += pick(adjX, alnX);
+  b.y += pick(adjY, alnY);
+}
+function endDrag(e){
+  if (!drag) return;
+  const {b, el, moved} = drag; const d = drag; drag = null;
+  el.classList.remove('dragging'); bin.classList.remove('show','hot');
+  if (!moved){
+    const now = performance.now();
+    if (lastTap.id === b.id && now - lastTap.time < 340){
+      clearTimeout(tapTimer);
+      pushHistory(d.before); b.s = -b.s;
+      el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip');
+      lastTap = {id:null, time:0}; render();
+    } else {
+      lastTap = {id:b.id, time:now};
+      // a single tap on an x tile turns it upright (or back); a second tap soon after flips its sign instead
+      if (b.t === 'x'){
+        clearTimeout(tapTimer);
+        tapTimer = setTimeout(() => { if (lastTap.id !== b.id) return; pushHistory(); b.rot = !b.rot; lastTap = {id:null, time:0}; render(); }, 330);
+      }
+    }
+    return;
+  }
+  pushHistory(d.before);
+  if (e.type === 'pointerup' && overBin(e.clientX, e.clientY)){
+    vanish([b.id]).then(render); return;
+  }
+  snapPiece(b);
+  const newSide = sideAt(b.x, b.y);
+  if (mode === 'eq' && newSide !== d.side){
+    b.s = -b.s; el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip');
+    toast('Crossed the = sign, so the sign flipped');
+  }
+  b.side = newSide;
+  const partner = balls.find(o => o !== b && o.t === b.t && o.s === -b.s && !o.f && !b.f && o.side === b.side && touching(o, b));
+  if (partner){ cancelPair(partner, b); return; }
+  render();
+}
+board.addEventListener('pointerup', endDrag);
+board.addEventListener('pointercancel', endDrag);
+
+/* ---------- tray ---------- */
+const palette = $('#palette');
+palette.querySelectorAll('.tb').forEach(btn => {
+  btn.innerHTML = `<span class="mini${btn.dataset.s === '-1' ? ' neg' : ''}" data-t="${btn.dataset.t}" style="--w:${T[btn.dataset.t].w}px;--h:${T[btn.dataset.t].h}px"><span class="orb"><span class="lab">${btn.dataset.s === '-1' ? '−' : ''}${T[btn.dataset.t].lab}</span></span></span>`;
+});
+function sidesForAdd(){ return mode === 'expr' ? ['L'] : target === 'both' ? ['L','R'] : [target]; }
+// Equation mode, + and − buttons: work like a counter while setting up an equation. + takes away a negative
+// tile of that kind if there is one, otherwise adds a positive tile; − takes away a positive tile if there is one,
+// otherwise adds a negative tile (so −2x = 8 can still be set up).
+function stepEq(t, s){
+  if (busy) return;
+  pushHistory();
+  const gone = [];
+  for (const side of sidesForAdd()){
+    const opp = balls.filter(b => b.side === side && b.t === t && b.s === -s && !b.f && !gone.includes(b.id));
+    if (opp.length) gone.push(opp.reduce((a, b) => b.id > a.id ? b : a).id);
+    else { const p = freeSpot(side, t); newBall(t, s, side, p.x, p.y); }
+  }
+  render();
+  if (gone.length){ busy = true; vanish(gone).then(() => { busy = false; render(); }); }
+}
+// What + and − do, in both modes: 'count' adds and takes away tiles; 'zero' makes − add the negative tile (a zero pair).
+let pmMode = 'count';
+try { if (localStorage.getItem('algebra-ball-tiles-pm') === 'zero') pmMode = 'zero'; } catch(e){}
+function showPmMode(){ document.querySelectorAll('#pmMode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === pmMode)); }
+document.querySelectorAll('#pmMode button').forEach(b => b.onclick = () => {
+  pmMode = b.dataset.m; showPmMode();
+  try { localStorage.setItem('algebra-ball-tiles-pm', pmMode); } catch(e){}
+  toast(pmMode === 'count' ? '+ adds a tile, − takes one away' : '− now adds a negative tile: a zero pair');
+});
+showPmMode();
+function trayTap(btn){
+  if (pmMode === 'count' && btn.classList.contains('st-btn')) stepEq(btn.dataset.t, +btn.dataset.s);
+  else addFromTray(btn.dataset.t, +btn.dataset.s);
+}
+function addFromTray(t, s){
+  if (busy) return;
+  pushHistory();
+  for (const side of sidesForAdd()){ const p = freeSpot(side, t); newBall(t, s, side, p.x, p.y); }
+  render();
+}
+let tdrag = null;
+palette.addEventListener('pointerdown', e => {
+  const btn = e.target.closest('.tb,.st-btn'); if (!btn || busy) return;
+  e.preventDefault();
+  btn.setPointerCapture(e.pointerId);
+  tdrag = { btn, t: btn.dataset.t, s: +btn.dataset.s, sx: e.clientX, sy: e.clientY, ghost:null };
+});
+palette.addEventListener('pointermove', e => {
+  if (!tdrag) return;
+  if (!tdrag.ghost && Math.hypot(e.clientX - tdrag.sx, e.clientY - tdrag.sy) < 8) return;
+  const hw = T[tdrag.t].w/2, hh = T[tdrag.t].h/2;
+  if (!tdrag.ghost){
+    const g = document.createElement('div');
+    g.className = 'ghost' + (tdrag.s < 0 ? ' neg' : '');
+    g.dataset.t = tdrag.t; g.style.setProperty('--w', hw*2 + 'px'); g.style.setProperty('--h', hh*2 + 'px');
+    g.innerHTML = `<span class="orb"><span class="lab">${tdrag.s < 0 ? '−' : ''}${T[tdrag.t].lab}</span></span>`;
+    document.body.appendChild(g); tdrag.ghost = g;
+  }
+  tdrag.ghost.style.transform = `translate(${e.clientX - hw}px, ${e.clientY - hh - 10}px)`;
+});
+function endTray(e){
+  if (!tdrag) return;
+  const d = tdrag; tdrag = null;
+  if (!d.ghost){ if (e.type === 'pointerup') trayTap(d.btn); return; }
+  d.ghost.remove();
+  if (e.type !== 'pointerup') return;
+  const br = board.getBoundingClientRect(), hw = T[d.t].w/2, hh = T[d.t].h/2;
+  const x = e.clientX - br.left, y = e.clientY - br.top - 10;
+  if (x < 0 || y < 0 || x > br.width || y > br.height) return;
+  pushHistory();
+  const b = newBall(d.t, d.s, 'L', clamp(x, hw, br.width - hw), clamp(y, hh, br.height - hh));
+  b.side = sideAt(b.x, b.y);
+  render();
+  const partner = balls.find(o => o !== b && o.t === b.t && o.s === -b.s && !o.f && !b.f && o.side === b.side && touching(o, b));
+  if (partner) setTimeout(() => cancelPair(partner, b), 120);
+}
+palette.addEventListener('pointerup', endTray);
+palette.addEventListener('pointercancel', endTray);
+palette.addEventListener('click', e => { const btn = e.target.closest('.tb,.st-btn'); if (btn && e.detail === 0) trayTap(btn); });
+
+
+/* ---------- complete-the-square demo ---------- */
+const demo = { short:'pairs', kind:'square', on:false, ex:0, step:0, steps:[], tiles:{}, layer:null, stage:null, timer:null, W:0, H:0 };
+const EXAMPLES = [
+  {b:2, c:1}, {b:4, c:4}, {b:6, c:9}, {b:8, c:16},        // perfect squares
+  {b:2, c:3}, {b:4, c:7}, {b:6, c:12}, {b:8, c:20},       // ones left over
+  {b:2, c:0}, {b:4, c:1}, {b:4, c:0}, {b:6, c:5}, {b:6, c:2}, {b:8, c:10}];   // zero pairs needed
+const X = '<i>x</i>', X2 = '<i>x</i><sup>2</sup>';
+const coef = n => n === 1 ? '' : n;
+const signed = n => n > 0 ? ` + ${n}` : n < 0 ? ` − ${-n}` : '';
+const txt = s => s.replace(/<sup>2<\/sup>/g, '²').replace(/<sup>3<\/sup>/g, '³').replace(/<[^>]+>/g, '');
+
+function planDemo(){
+  const {b, c} = EXAMPLES[demo.ex], h = b/2, need = h*h, k = Math.max(0, need - c), S = L + h*U, G = 6;
+  const colX = L + 20, spareX = Math.max(S, colX + L) + 28;
+  const spare = i => ({ x: spareX + (i % 3)*(U + G) + U/2, y: Math.floor(i/3)*(U + G) + U/2 });
+  const cell = i => ({ x: L + (i % h)*U + U/2, y: L + Math.floor(i/h)*U + U/2 });
+  const tiles = { sq:{t:'x2', s:1} };
+  for (let i = 0; i < b; i++) tiles['x'+i] = {t:'x', s:1};
+  for (let i = 0; i < c; i++) tiles['o'+i] = {t:'one', s:1};
+  for (let i = 0; i < k; i++){ tiles['p'+i] = {t:'one', s:1}; tiles['n'+i] = {t:'one', s:-1}; }
+
+  const e0 = `${X2} + ${coef(b)}${X}${signed(c)}`;
+  const eSplit = `${X2} + ${coef(h)}${X} + ${coef(h)}${X}${signed(c)}`;
+  const r = c - need;
+  const fin = `(${X} + ${h})<sup>2</sup>${signed(r)}`;
+  const steps = [];
+  let st = {};
+  const push = (caption, expr, box = '') => { steps.push({ st: JSON.parse(JSON.stringify(st)), caption, expr, box }); };
+
+  st.sq = {x:L/2, y:L/2, show:1};
+  for (let i = 0; i < b; i++) st['x'+i] = {x: colX + L/2, y: i*(U + G) + U/2, show:1};
+  for (let i = 0; i < c; i++) st['o'+i] = {...spare(i), show:1};
+  // zero pairs are introduced side by side outside the square: +1 in the first spare column, −1 next to it
+  const pairP = i => ({ x: spareX + U/2, y: i*U + U/2 }), pairN = i => ({ x: spareX + U + G + U/2, y: i*U + U/2 });
+  for (let i = 0; i < k; i++){ st['p'+i] = {...pairP(i), show:0}; st['n'+i] = {...pairN(i), show:0}; }
+  push(`Start with ${txt(e0)}: one x² square, ${b} x tiles${c ? ` and ${c} one${c > 1 ? 's' : ''}` : ' and no ones'}.`, e0);
+
+  for (let i = h; i < b; i++) st['x'+i].y += 16;
+  push(`Split the ${b} x tiles into two equal groups of ${h}.`, eSplit);
+
+  for (let i = 0; i < h; i++) st['x'+i] = {x: L/2, y: L + i*U + U/2, show:1};
+  push(`Slide one group along the bottom of the x² square.`, eSplit);
+
+  for (let i = h; i < b; i++) st['x'+i] = {x: L + (i - h)*U + U/2, y: L/2, rot:1, show:1};
+  push(`Turn the other group upright and stand it down the right side.`, eSplit);
+
+  push(`It's nearly a square. The missing corner is ${h} by ${h}, so it needs ${need} one${need > 1 ? 's' : ''}.`, eSplit, 'corner');
+
+  const moved = Math.min(c, need);
+  for (let i = 0; i < moved; i++) st['o'+i] = {...cell(i), show:1};
+  for (let i = moved; i < c; i++) st['o'+i] = {x: spareX + (i - moved)*U + U/2, y: U/2, show:1};   // leftovers wait in a touching row
+  push(c === need ? `Move the ${need} one${need > 1 ? 's' : ''} into the corner. ${need > 1 ? 'They fit' : 'It fits'} exactly.`
+     : c > need ? `Move ${need} ones into the corner. ${c - need} ${c - need > 1 ? 'are' : 'is'} left over.`
+     : c ? `Move all ${c} one${c > 1 ? 's' : ''} into the corner. It still needs ${k} more.` : `There are no ones to move, so the corner still needs all ${k}.`, eSplit, 'corner');
+
+  if (k){
+    for (let i = 0; i < k; i++){ st['p'+i].show = 1; st['n'+i].show = 1; }
+    push(`Add ${k} zero pair${k > 1 ? 's' : ''}: ${k} × +1 and ${k} × −1. Adding zero keeps the value the same.`,
+         `${eSplit} + ${k} + (−${k})`, 'corner');
+    for (let i = 0; i < k; i++) st['p'+i] = {...cell(c + i), show:1};
+    push(`Move the +1 balls into the corner. The −1 balls wait outside.`, `${X2} + ${coef(b)}${X} + ${need} − ${k}`, 'corner');
+  }
+  push(`The square is complete. Each side is x + ${h}, so ${txt(e0)} = ${txt(fin)}.`, `${e0}<span class="eq">=</span>${fin}`, 'full');
+  {
+    push(`Now multiply the sides, one part at a time. Purple x across the top × purple x down the side = x².`, partsExpr(h, false, 0), 'parts0');
+    push(`Orange ${h} across the top × purple x down the side = ${coef(h)}x.`, partsExpr(h, false, 1), 'parts1');
+    push(`Purple x across the top × orange ${h} down the side = ${coef(h)}x.`, partsExpr(h, false, 2), 'parts2');
+    push(`Orange ${h} across the top × orange ${h} down the side = ${h*h}.`, partsExpr(h, false, 3), 'parts3');
+    push(`Add the parts: (x + ${h})² = x² + ${coef(h)}x + ${coef(h)}x + ${h*h} = x² + ${coef(2*h)}x + ${h*h}.`, partsExpr(h, false, 'all'), 'partsAll');
+    // whatever is left outside the square is the + or − part of the answer
+    const left = c > need ? Array.from({length: c - need}, (_, i) => 'o' + (need + i)) : Array.from({length: k}, (_, i) => 'n' + i);
+    demo.extraHTML = '';
+    if (left.length){
+      const n = Math.abs(r);
+      push(r > 0 ? `${n} unit ball${n > 1 ? 's are' : ' is'} left over outside the square. They make a rectangle 1 by ${n}: 1 × ${n} = ${n}.`
+                 : `The ${n} −1 ball${n > 1 ? 's' : ''} from the zero pairs ${n > 1 ? 'are' : 'is'} left over. They make a rectangle 1 by ${n}: 1 × (−${n}) = −${n}.`,
+           `${e0}<span class="eq">=</span>(${X} + ${h})<sup>2</sup> ${leftRectTerm(r)}`, 'leftover');
+      steps[steps.length - 1].extras = ['left'];
+      demo.extraHTML = r > 0 ? leftRectHTML(spareX, 0, r) : leftRectHTML(spareX + U + G, 0, r, true);
+    }
+    // cancel the borrowed zero pairs: each −1 slides onto its +1 in the corner, and a dashed −1 gap is left
+    if (k){
+      for (let i = 0; i < k; i++){ const at = cell(c + i); st['p'+i] = {...at, show:0, zap:1}; st['n'+i] = {...at, show:0, zap:1}; }
+      push(`Now cancel the ${k} zero pair${k > 1 ? 's' : ''}: each −1 slides onto a +1 in the corner and both disappear. The square is left with ${k} gap${k > 1 ? 's' : ''}: (x + ${h})² with ${k} missing, which is ${txt(fin)}.`,
+           `${e0}<span class="eq">=</span>(${X} + ${h})<sup>2</sup> ${term(`− ${k}`, 'var(--b-neg)', 'var(--b-neg)')}`, 'leftover');
+      steps[steps.length - 1].extras = ['gaps'];
+      demo.extraHTML += Array.from({length: k}, (_, i) => { const at = cell(c + i); return `<div class="d-hole" data-x="gaps" style="left:${at.x - U/2}px;top:${at.y - U/2}px">−1</div>`; }).join('');
+    }
+    // finish on the simplest form of the answer
+    push(`So ${txt(e0)} = ${txt(fin)}.`, `${e0}<span class="eq">=</span>${fin}`, 'leftover');
+    steps[steps.length - 1].extras = k ? ['gaps'] : left.length ? ['left'] : [];
+  }
+  demo.parts = areaParts(h, [X2, `${coef(h)}${X}`, `${coef(h)}${X}`, h*h]); demo.sideNeg = false;
+
+  demo.steps = steps; demo.tiles = tiles; demo.h = h; demo.S = S; demo.need = need; demo.labTop = demo.labLeft = `${h}`;
+  let mx = 0, my = 0;
+  for (const step of steps) for (const id in step.st){
+    const p = step.st[id], t = T[tiles[id].t], w = p.rot ? t.h : t.w, hh = p.rot ? t.w : t.h;
+    mx = Math.max(mx, p.x + w/2); my = Math.max(my, p.y + hh/2);
+  }
+  const P = 34;
+  demo.P = P; demo.W = P + Math.max(mx, S) + 12; demo.H = P + Math.max(my, S) + 12;
+}
+
+function drawDemo(){
+  demo.layer?.remove(); demo.layer = null; cubeDispose();
+  if (demo.kind === 'cube') drawCube(); else if (demo.kind === 'drag') drawDrag(); else drawSquare();
+  $('#dSteps').innerHTML = demo.steps.map(() => '<i></i>').join('');
+  const list = demo.kind === 'cube' ? CUBES : demo.kind === 'factor' ? BINOMS : demo.kind === 'zero' || demo.kind === 'pairs' ? [] : EXAMPLES;
+  $('#demoEx').hidden = demo.kind === 'zero' || demo.kind === 'pairs';
+  $('#pairsForm').hidden = demo.kind !== 'pairs';
+  $('#pairsBack').hidden = !demo.pairsN;
+  $('#stepNav').hidden = demo.kind === 'drag'; $('#dragNav').hidden = demo.kind !== 'drag';
+  if (demo.kind !== 'drag') $('#gMode').hidden = true;
+  $('#demoEx').innerHTML = '<span class="tag">Examples</span>' + list.map((e, i) =>
+    `<button type="button" data-i="${i}" aria-pressed="${i === demo.ex}">${txt(demo.kind === 'cube' ? cubeExpr(e) : demo.kind === 'factor' ? (e.gcf ? `${X2} ${e.gcf < 0 ? '−' : '+'} ${coef(e.a)}${X}` : `${X2} − ${e.a*e.a}`) : `${X2} + ${coef(e.b)}${X}${signed(e.c)}`)}</button>`).join('');
+  demoUI();
+}
+function drawSquare(){
+  demo.FH = null; demo.extraHTML = '';
+  ({ factor: planFactor, zero: planZero, pairs: planPairs }[demo.kind] || planDemo)();
+  const layer = document.createElement('div'); layer.className = 'demo-layer still';
+  layer.style.width = demo.W + 'px'; layer.style.height = demo.H + 'px';
+  const stage = document.createElement('div'); stage.className = 'demo-stage';
+  stage.style.left = stage.style.top = demo.P + 'px';
+  layer.appendChild(stage);
+  const {h, S} = demo, FH = demo.FH || S;
+  stage.insertAdjacentHTML('beforeend', `
+    <div class="d-box d-corner" style="left:${L}px;top:${L}px;width:${h*U}px;height:${h*U}px">${h}×${h}</div>
+    <div class="d-box d-full" style="left:0;top:0;width:${S}px;height:${FH}px"></div>
+    <div class="d-box d-dim fx" style="left:0;top:-${demo.P - 4}px;width:${L}px;height:20px"><span>${X}</span></div>
+    <div class="d-box d-dim fn" style="left:${L}px;top:-${demo.P - 4}px;width:${h*U}px;height:20px"><span>${demo.labTop}</span></div>
+    <div class="d-box d-dim vert fx" style="top:0;left:-${demo.P - 4}px;height:${L}px;width:20px"><span>${X}</span></div>
+    ${demo.labLeft !== '' ? `<div class="d-box d-dim vert fm" style="top:${L}px;left:-${demo.P - 4}px;height:${h*U}px;width:20px"><span>${demo.labLeft}</span></div>` : ''}${demo.extraHTML}${partsHTML(demo.parts || [])}`);
+  for (const id in demo.tiles){
+    const {t, s} = demo.tiles[id];
+    const el = document.createElement('div');
+    el.className = 'ball dt' + (s < 0 ? ' neg' : '');
+    el.dataset.t = t; el.dataset.id = id;
+    el.style.setProperty('--w', T[t].w + 'px'); el.style.setProperty('--h', T[t].h + 'px');
+    el.innerHTML = `<span class="orb"><span class="lab">${s < 0 ? '−' : ''}${T[t].lab}</span></span>`;
+    stage.appendChild(el);
+    demo.tiles[id].el = el;
+  }
+  board.appendChild(layer);
+  demo.layer = layer; demo.stage = stage;
+  fitDemo(); showStep(demo.step = 0);
+  requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.remove('still')));
+}
+function fitDemo(){
+  if (demo.kind === 'cube'){ fitCube(); return; }
+  if (!demo.layer) return;
+  const bw = board.clientWidth, bh = board.clientHeight;
+  // on the parts step, zoom in on the finished square so the length × width labels are easy to read
+  const focus = demo.kind !== 'drag' && /^parts/.test(demo.steps[demo.step]?.box || '');
+  const stp = demo.steps[demo.step], fitStep = demo.kind === 'pairs' && stp?.bw;
+  const W = focus ? demo.P + demo.S + 40 : fitStep ? demo.P + stp.bw + 20 : demo.W, H = focus ? demo.P + demo.S + 40 : fitStep ? demo.P + stp.bh + 20 : demo.H;
+  const k = Math.min(focus || fitStep ? 1.6 : 1.25, (bw - 24)/W, (bh - 24)/H); demo.scale = k;
+  demo.layer.style.transform = `translate(${(bw - W*k)/2}px, ${Math.max(12, (bh - H*k)/2)}px) scale(${k})`;
+}
+function showStep(i){
+  if (demo.kind === 'cube'){ cubeShow(i); demoUI(); return; }
+  const step = demo.steps[i];
+  for (const id in demo.tiles){
+    const p = step.st[id], {el, t} = demo.tiles[id], w = T[t].w, h = T[t].h;
+    el.classList.toggle('off', !p.show);
+    el.classList.toggle('rot', !!p.rot);
+    el.classList.toggle('zap', !!p.zap);
+    el.classList.toggle('hl', (step.hl || []).includes(id));
+    el.style.transform = `translate(${p.x - w/2}px, ${p.y - h/2}px) rotate(${p.rot ? 90 : 0}deg)`;
+  }
+  const last = demo.kind !== 'zero' && (step.box === 'full' || step.box === 'leftover' || /^parts/.test(step.box || ''));
+  demo.stage.querySelector('.d-corner').classList.toggle('show', step.box === 'corner');
+  demo.stage.querySelectorAll('.d-full,.d-dim:not([data-x])').forEach(e => e.classList.toggle('show', last));
+  const pm = /^parts(\d|All)$/.exec(step.box || '');
+  showParts(demo.stage, pm ? (pm[1] === 'All' ? 'all' : +pm[1]) : step.box === 'leftover' ? 'all' : null);
+  demo.stage.style.setProperty('--side-c', demo.sideNeg ? 'var(--hl-b)' : 'var(--hl-c)');
+  fitDemo();
+  demo.stage.querySelectorAll('[data-x]').forEach(e => e.classList.toggle('show', (step.extras || []).includes(e.dataset.x)));
+  demoUI();
+}
+function demoUI(){
+  $('#modeExpr').setAttribute('aria-pressed', false);
+  $('#modeEq').setAttribute('aria-pressed', false);
+  $('#modeDrag').setAttribute('aria-pressed', demo.kind === 'drag');
+  if (demo.kind === 'drag'){ $('#modeDemo').setAttribute('aria-pressed', false); $('#modeCube').setAttribute('aria-pressed', false); $('#modeFactor').setAttribute('aria-pressed', false); $('#modeZero').setAttribute('aria-pressed', false); $('#modePairs').setAttribute('aria-pressed', false); dragUI(); return; }
+  const i = demo.step, n = demo.steps.length, step = demo.steps[i];
+  if (!step) return;
+  $('#expr').innerHTML = step.expr;
+  $('#expr').classList.toggle('long', txt(step.expr).length > 24);
+  const st = $('#status'); st.textContent = step.caption; st.className = 'status ' + (i === n - 1 ? 'good' : 'hint');
+  $('#dBack').disabled = i === 0;
+  $('#dNext').querySelector('span').textContent = i === n - 1 ? 'Replay' : 'Next';
+  $('#dPlay').querySelector('span').textContent = demo.timer ? 'Pause' : 'Play';
+  $('#dSteps').querySelectorAll('i').forEach((d, j) => { d.className = j === i ? 'on' : j < i ? 'done' : ''; });
+  $('#modeExpr').setAttribute('aria-pressed', false);
+  $('#modeEq').setAttribute('aria-pressed', false);
+  $('#modeDemo').setAttribute('aria-pressed', demo.kind === 'square');
+  $('#modeCube').setAttribute('aria-pressed', demo.kind === 'cube');
+  $('#modeFactor').setAttribute('aria-pressed', demo.kind === 'factor');
+  $('#modeZero').setAttribute('aria-pressed', demo.kind === 'zero');
+  $('#modePairs').setAttribute('aria-pressed', demo.kind === 'pairs');
+}
+function go(i){ demo.step = Math.max(0, Math.min(demo.steps.length - 1, i)); showStep(demo.step); }
+function stopPlay(){ clearInterval(demo.timer); demo.timer = null; if (demo.on) demoUI(); }
+function play(){
+  if (demo.timer){ stopPlay(); return; }
+  if (demo.step === demo.steps.length - 1) go(0);
+  demo.timer = setInterval(() => {
+    if (demo.step >= demo.steps.length - 1){ stopPlay(); return; }
+    go(demo.step + 1);
+    if (demo.step >= demo.steps.length - 1) stopPlay();
+  }, reduce ? 3000 : 2600);
+  demoUI();
+}
+function enterDemo(kind = 'square'){
+  closeSolver(); closeChallenge(); closeTry(); closeSuggest();
+  if (demo.on && demo.kind === kind) return;
+  stopPlay(); stopShow();
+  const shared = k => k === 'square' || k === 'drag';   // these two share the same examples
+  if (demo.kind !== kind && !(shared(demo.kind) && shared(kind))) demo.ex = 0;
+  demo.kind = kind;
+  demo.on = true; closeBuild();
+  board.classList.add('demo-on');
+  $('#actions').hidden = $('#tray').hidden = true; $('#demoCtl').hidden = false;
+  drawDemo();
+}
+function exitDemo(){
+  if (!demo.on) return;
+  stopPlay(); stopShow(); demo.on = false;
+  demo.layer?.remove(); demo.layer = null; cubeDispose();
+  board.classList.remove('demo-on');
+  $('#actions').hidden = $('#tray').hidden = false; $('#demoCtl').hidden = true;
+  render();
+}
+$('#dNext').onclick = () => { stopPlay(); go(demo.step === demo.steps.length - 1 ? 0 : demo.step + 1); };
+$('#dBack').onclick = () => { stopPlay(); go(demo.step - 1); };
+$('#dPlay').onclick = play;
+$('#demoEx').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; stopPlay(); stopShow(); demo.ex = +b.dataset.i; drawDemo(); });
+document.addEventListener('keydown', e => {
+  if (!demo.on || document.activeElement.tagName === 'INPUT') return;
+  if (demo.kind === 'drag'){
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'){ e.preventDefault(); stopShow(); setLevel(demo.g + 1, true); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){ e.preventDefault(); stopShow(); setLevel(demo.g - 1, true); }
+    return;
+  }
+  if (e.key === 'ArrowRight'){ stopPlay(); go(demo.step + 1); }
+  if (e.key === 'ArrowLeft'){ stopPlay(); go(demo.step - 1); }
+});
+
+
+
+
+/* ---------- colour-coded expressions for the parts steps ---------- */
+// x in purple, the number across the top in orange, the number down the side in orange (or green when negative).
+// The factors being multiplied are underlined, and the product they make gets a frame in the same colours as its part.
+const CX = 'var(--hl-a)', CN = 'var(--hl-c)', CG = 'var(--hl-b)';
+const cx = (on = false) => `<span class="tx${on ? ' hot' : ''}"><i>x</i></span>`;
+const cn = (n, cls = 'tn', on = false) => `<span class="${cls}${on ? ' hot' : ''}">${n}</span>`;
+// leftover pieces: a length of r units (blue, or red when negative) by a height of 1 (grey)
+const LC = r => r > 0 ? 'var(--accent)' : 'var(--b-neg)', ONE_C = 'var(--muted)';
+const leftTerm = (r, tail = '') => r > 0 ? term(`+ ${r}${tail}`, LC(r), LC(r)) : term(`− ${-r}${tail}`, LC(r), LC(r));
+// equation form of the leftover rectangle: + (1 × 3) or + (1 × (−4))
+const leftRectTerm = r => `+ ${term(`<span style="color:${ONE_C}">1</span> × <span style="color:${LC(r)}">${r > 0 ? r : `(−${-r})`}</span>`, LC(r), ONE_C)}`;
+// the rectangle the leftover balls make when lined up in a row starting at (x, y): frame, product and side lengths
+function leftRectHTML(x, y, r, vertical = false){
+  const n = Math.abs(r), c = LC(r), lab = r > 0 ? `${r}` : '−' + n;
+  const w = vertical ? U : n*U, h = vertical ? n*U : U;
+  const topLab = vertical ? '1' : lab, sideLab = vertical ? lab : '1', topC = vertical ? ONE_C : c, sideC = vertical ? c : ONE_C;
+  return `<div class="d-box d-part d-left" data-x="left" style="left:${x - 2}px;top:${y - 2}px;width:${w + 4}px;height:${h + 4}px;--ct:${topC};--cs:${sideC}"><b>${lab}</b></div>
+    <div class="d-box d-dim" data-x="left" style="left:${x}px;top:${y - 26}px;width:${w}px;height:20px;--dc:${topC}"><span>${topLab}</span></div>
+    <div class="d-box d-dim vert" data-x="left" style="top:${y}px;left:${x - 26}px;height:${h}px;width:20px;--dc:${sideC}"><span>${sideLab}</span></div>`;
+}
+const term = (html, ct, cs) => `<span class="term cur" style="--ct:${ct};--cs:${cs}">${html}</span>`;
+function partsExpr(n, neg, part){
+  const sideCls = neg ? 'tg' : 'tn', sideC = neg ? CG : CN;
+  const P = typeof part === 'number' ? part : -1;
+  const topX = P === 0 || P === 2, topN = P === 1 || P === 3, sideX = P === 0 || P === 1, sideN = P === 2 || P === 3;
+  const lhs = `(${cx(topX)} + ${cn(n, 'tn', topN)})(${cx(sideX)} ${neg ? '−' : '+'} ${cn(n, sideCls, sideN)})<span class="eq">=</span>`;
+  const terms = [X2, `${coef(n)}${X}`, `${coef(n)}${X}`, `${n*n}`], signs = ['', '+', neg ? '−' : '+', neg ? '−' : '+'];
+  const cols = [[CX, CX], [CN, CX], [CX, sideC], [CN, sideC]];
+  if (part === 'all'){
+    const all = terms.map((t, i) => (i ? ` ${signs[i]} ` : '') + t).join('');
+    return lhs + all + `<span class="eq">=</span>` + (neg ? `${X2} − ${n*n}` : `${X2} + ${coef(2*n)}${X} + ${n*n}`);
+  }
+  return lhs + terms.slice(0, P + 1).map((t, i) => (i ? ` ${signs[i]} ` : '') + (i === P ? term(t, ...cols[i]) : t)).join('');
+}
+
+/* ---------- area-model parts ---------- */
+// top = label of the extra length across the top, left = label down the side; n = number of unit rows/columns
+// n = number of unit rows/columns; prods = products of the four parts; sideNeg = the side number is negative (its own colour)
+function areaParts(n, prods, sideNeg = false){
+  const cx = 'var(--hl-a)', ct = 'var(--hl-c)', cs = sideNeg ? 'var(--hl-b)' : 'var(--hl-c)';
+  return [
+    { x:0, y:0, w:L, h:L, ct:cx, cs:cx, label:prods[0] },
+    { x:L, y:0, w:n*U, h:L, ct, cs:cx, label:prods[1] },
+    { x:0, y:L, w:L, h:n*U, ct:cx, cs, label:prods[2] },
+    { x:L, y:L, w:n*U, h:n*U, ct, cs, label:prods[3] }];
+}
+// each frame straddles its part's boundary (half inside, half outside), so where two parts meet
+// their edges sit on the same line and overlap into one edge as wide as the outside edges
+const partsHTML = parts => parts.map(q => `<div class="d-box d-part" style="left:${q.x - 2}px;top:${q.y - 2}px;width:${q.w + 4}px;height:${q.h + 4}px;--ct:${q.ct};--cs:${q.cs}"><b>${q.label}</b></div>`).join('');
+
+// Highlight one part of the finished shape (0–3) with the two side lengths that multiply to make it,
+// or all of them ('all'), or none (null). Earlier parts stay visible but faded.
+const PART_DIMS = [['.d-dim.fx:not(.vert)', '.d-dim.fx.vert'], ['.d-dim.fn', '.d-dim.fx.vert'], ['.d-dim.fx:not(.vert)', '.d-dim.fm'], ['.d-dim.fn', '.d-dim.fm']];
+function showParts(stage, part){
+  const on = part !== null;
+  stage.classList.toggle('parts-on', on);
+  stage.querySelectorAll('.d-part:not(.d-left)').forEach((e, i) => {
+    e.classList.toggle('show', on && (part === 'all' || i <= part));
+    e.classList.toggle('cur', on && part === i);
+    e.classList.toggle('past', on && part !== 'all' && i < part);
+  });
+  const hot = on && part !== 'all' ? PART_DIMS[part].flatMap(sel => [...stage.querySelectorAll(sel)]) : [];
+  stage.querySelectorAll('.d-dim').forEach(e => {
+    e.classList.toggle('hot', hot.includes(e));
+    e.classList.toggle('dimmed', on && part !== 'all' && !hot.includes(e));
+  });
+}
+
+/* ---------- drag-to-complete-the-square demo ---------- */
+function planDrag(){
+  const {b, c} = EXAMPLES[demo.ex], h = b/2, need = h*h, k = Math.max(0, need - c), S = L + h*U, G = 6;
+  const colX = S + 26, spareX = colX + L + 22;
+  const tiles = { sq:{t:'x2', s:1} };
+  for (let i = 0; i < b; i++) tiles['x'+i] = {t:'x', s:1};
+  for (let i = 0; i < c; i++) tiles['o'+i] = {t:'one', s:1};
+  for (let i = 0; i < k; i++){ tiles['p'+i] = {t:'one', s:1}; tiles['n'+i] = {t:'one', s:-1}; }
+  // corner cells in growing-square order, so the first g*g cells always form a g by g block
+  const cells = [];
+  for (let m = 0; m < h; m++){ for (let j = 0; j < m; j++) cells.push([j, m], [m, j]); cells.push([m, m]); }
+  Object.assign(demo, { b, c, h, need, k, S, G, colX, spareX, tiles,
+    cells: cells.map(([r, q]) => ({ x: L + q*U + U/2, y: L + r*U + U/2 })), steps:[], g:0, d:0, shownPairs:0 });
+  clearTimeout(demo.introTimer); clearTimeout(demo.partTimer);
+  const spareRows = Math.max(Math.ceil(c/4), k);
+  const P = 34;
+  demo.P = P;
+  demo.W = P + Math.max(S + 30, spareX + Math.max(4*U, 2*U + G)) + 12;
+  demo.H = P + Math.max(S + 30, b*(U + G), spareRows*U) + 12;
+  demo.leftY = S + 48;
+  demo.labTop = demo.labLeft = `${h}`;
+}
+function dragState(g){
+  const {b, c, h, k, G, colX, spareX, cells} = demo, st = {};
+  const spare = i => ({ x: spareX + (i % 3)*(U + G) + U/2, y: Math.floor(i/3)*(U + G) + U/2 });
+  st.sq = {x:L/2, y:L/2, show:1};
+  let j = 0;
+  for (let i = 0; i < b; i++){
+    const right = i >= h, idx = right ? i - h : i;
+    if (idx < g) st['x'+i] = right ? {x: L + idx*U + U/2, y: L/2, rot:1, show:1} : {x: L/2, y: L + idx*U + U/2, show:1};
+    else st['x'+i] = {x: colX + L/2, y: (j++)*(U + G) + U/2, show:1};
+  }
+  const n2 = g*g, used = Math.min(c, n2), extra = Math.max(0, n2 - c);
+  let sp = 0;
+  for (let i = 0; i < c; i++){ if (i < used){ st['o'+i] = {...cells[i], show:1}; continue; } const j = sp++; st['o'+i] = {x: spareX + (j % 4)*U + U/2, y: Math.floor(j/4)*U + U/2, show:1}; }
+  const pairs = demo.short === 'pairs', intro = {};
+  // leftover ones and zero pairs never appear together, so the pairs can use the spare area: +1 left, −1 right
+  const pairP = i => ({ x: spareX + U/2, y: i*U + U/2 }), pairN = i => ({ x: spareX + U + G + U/2, y: i*U + U/2 });
+  for (let i = 0; i < k; i++){
+    const on = pairs && i < extra;
+    st['p'+i] = on ? {...cells[Math.min(cells.length - 1, c + i)], show:1} : {...pairP(i), show:0};
+    st['n'+i] = {...pairN(i), show: on ? 1 : 0};
+    intro['p'+i] = {...pairP(i), show: on ? 1 : 0};
+  }
+  return { st, used, extra, intro };
+}
+function drawDrag(){
+  planDrag();
+  const layer = document.createElement('div'); layer.className = 'demo-layer still quick d-anim drag-parts';
+  layer.style.width = demo.W + 'px'; layer.style.height = demo.H + 'px';
+  const stage = document.createElement('div'); stage.className = 'demo-stage';
+  stage.style.left = stage.style.top = demo.P + 'px';
+  layer.appendChild(stage);
+  stage.insertAdjacentHTML('beforeend', `
+    <div class="d-grow" id="gGrow"></div>${demo.c > demo.need ? leftRectHTML(demo.spareX, 0, demo.c - demo.need) : demo.c < demo.need ? leftRectHTML(demo.spareX + U + demo.G, 0, demo.c - demo.need, true) : ''}${partsHTML(areaParts(demo.h, [X2, `${coef(demo.h)}${X}`, `${coef(demo.h)}${X}`, demo.h*demo.h]))}
+    <div class="d-box d-dim fx" style="left:0;top:-${demo.P - 4}px;width:${L}px;height:20px"><span>${X}</span></div>
+    <div class="d-box d-dim fn live" id="gTop" style="left:${L}px;top:-${demo.P - 4}px;height:20px"><span></span></div>
+    <div class="d-box d-dim vert fx" style="top:0;left:-${demo.P - 4}px;height:${L}px;width:20px"><span>${X}</span></div>
+    <div class="d-box d-dim vert fm live" id="gLeft" style="top:${L}px;left:-${demo.P - 4}px;width:20px"><span></span></div>`);
+  demo.holes = [];
+  for (let i = 0; i < demo.k; i++){
+    const c = demo.cells[demo.c + i], hole = document.createElement('div');
+    hole.className = 'd-hole'; hole.textContent = '−1';
+    hole.style.left = (c.x - U/2) + 'px'; hole.style.top = (c.y - U/2) + 'px';
+    stage.appendChild(hole); demo.holes.push(hole);
+  }
+  for (const id in demo.tiles){
+    const {t, s} = demo.tiles[id];
+    const el = document.createElement('div');
+    el.className = 'ball dt' + (s < 0 ? ' neg' : '');
+    el.dataset.t = t;
+    el.style.setProperty('--w', T[t].w + 'px'); el.style.setProperty('--h', T[t].h + 'px');
+    el.innerHTML = `<span class="orb"><span class="lab">${s < 0 ? '−' : ''}${T[t].lab}</span></span>`;
+    stage.appendChild(el);
+    demo.tiles[id].el = el;
+  }
+  const hd = document.createElement('button');
+  hd.className = 'd-handle idle'; hd.type = 'button';
+  hd.setAttribute('aria-label', 'Corner handle. Drag, or use the arrow keys, to grow the square');
+  hd.innerHTML = '<span class="knob"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 10v7h-7M7 14V7h7"/></svg></span>';
+  stage.appendChild(hd);
+  board.appendChild(layer);
+  demo.layer = layer; demo.stage = stage; demo.handle = hd;
+  $('#gSteps').innerHTML = Array.from({length: demo.h + 1}, () => '<i></i>').join('');
+  bindHandle(hd);
+  fitDemo(); setLevel(0, false, true); placeHandle(0);
+  requestAnimationFrame(() => requestAnimationFrame(() => layer.classList.remove('still')));
+}
+function placeHandle(d){
+  demo.d = d;
+  const sz = L + d;
+  demo.handle.style.transform = `translate(${sz}px, ${sz}px)`;
+  const gr = $('#gGrow'); gr.style.width = sz + 'px'; gr.style.height = sz + 'px';
+}
+// after the parts sequence: highlight whatever is outside the completed square
+function dragLeftovers(){
+  const {c, h, need} = demo, r = c - need, {extra} = dragState(h);
+  const els2 = [];
+  if (r > 0) for (let i = need; i < c; i++) els2.push(demo.tiles['o'+i].el);
+  else if (demo.short === 'pairs') for (let i = 0; i < extra; i++) els2.push(demo.tiles['n'+i].el);
+  else els2.push(...demo.holes.slice(0, extra));
+  if (!els2.length || (r < 0 && demo.short !== 'pairs')) return;
+  // frame the leftovers where they sit as a 1 × r rectangle, then finish on the simplest form
+  demo.stage.querySelectorAll('[data-x="left"]').forEach(e => e.classList.add('show'));
+  demo.leftShown = true; dragUI();
+  if (r < 0){
+    // then cancel the zero pairs: each −1 slides onto its +1 in the corner, both vanish, and dashed −1 gaps are left
+    demo.partTimer = setTimeout(() => {
+      demo.stage.querySelectorAll('[data-x="left"]').forEach(e => e.classList.remove('show'));
+      for (let i = 0; i < extra; i++){
+        const pe = demo.tiles['p'+i].el, ne = demo.tiles['n'+i].el;
+        ne.classList.add('over'); ne.style.transform = pe.style.transform;
+      }
+      demo.partTimer = setTimeout(() => {
+        for (let i = 0; i < extra; i++){ demo.tiles['p'+i].el.classList.add('off'); demo.tiles['n'+i].el.classList.add('off'); demo.holes[i]?.classList.add('show'); }
+        demo.leftShown = false; demo.gapsShown = true; dragUI();
+      }, 750);
+    }, 2200);
+  } else demo.partTimer = setTimeout(() => { demo.leftShown = false; dragUI(); }, 2200);
+}
+function stagePop(x, y){
+  const z = document.createElement('div');
+  z.className = 'zero-pop'; z.textContent = '0';
+  z.style.left = x + 'px'; z.style.top = y + 'px';
+  demo.stage.appendChild(z); setTimeout(() => z.remove(), 900);
+}
+// play the parts of the completed square one at a time, then the leftovers
+function playParts(){
+  clearTimeout(demo.partTimer);
+  demo.stage.querySelectorAll('[data-x="left"]').forEach(e => e.classList.remove('show'));
+  demo.leftShown = false;
+  let k = 0;
+  showParts(demo.stage, null);
+  const next = () => {
+    showParts(demo.stage, k < 4 ? k : 'all');
+    demo.partK = k < 4 ? k : null; dragUI();
+    if (k >= 4) demo.partTimer = setTimeout(dragLeftovers, 1300);
+    if (k++ < 4) demo.partTimer = setTimeout(next, 1400);
+  };
+  demo.partTimer = setTimeout(next, 700);
+}
+function setLevel(g, snapHandle, force = false){
+  if (!force && clamp(g, 0, demo.h) === demo.g){ if (snapHandle) placeHandle(demo.g*U); return; }
+  demo.stage?.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+  demo.leftShown = false; demo.partK = null; demo.leftRect = false;
+  if (demo.gapsShown){ demo.gapsShown = false; Object.values(demo.tiles || {}).forEach(t => t.el?.classList.remove('over')); }
+  demo.stage?.querySelectorAll('[data-x="left"]').forEach(e => e.classList.remove('show'));
+  g = clamp(g, 0, demo.h);
+  const changed = g !== demo.g;
+  demo.g = g;
+  const {st, extra, intro} = dragState(g);
+  demo.holes.forEach((hole, i) => hole.classList.toggle('show', demo.short === 'holes' && i < extra));
+  const apply = state => {
+    for (const id in demo.tiles){
+      const p = state[id], {el, t} = demo.tiles[id];
+      el.classList.toggle('off', !p.show);
+      el.classList.toggle('rot', !!p.rot);
+      el.style.transform = `translate(${p.x - T[t].w/2}px, ${p.y - T[t].h/2}px) rotate(${p.rot ? 90 : 0}deg)`;
+    }
+  };
+  clearTimeout(demo.introTimer);
+  const shown = demo.short === 'pairs' ? extra : 0, before = demo.shownPairs || 0;
+  demo.shownPairs = shown;
+  if (shown > before && !reduce){
+    // new zero pairs: first show each +1 beside its −1, then drop the +1s into the corner
+    const first = {...st};
+    for (let i = before; i < shown; i++) first['p'+i] = intro['p'+i];
+    apply(first);
+    demo.introTimer = setTimeout(() => apply(st), 650);
+  } else if (shown < before && !reduce){
+    // pairs no longer needed: each +1 comes out beside its −1, the −1 slides over it, and both disappear
+    const out = {...st}, over = {...st}, gone = {...st};
+    for (let i = shown; i < before; i++){
+      const pp = intro['p'+i], np = st['n'+i];
+      out['p'+i] = {...pp, show:1}; out['n'+i] = {...np, show:1};
+      over['p'+i] = {...pp, show:1}; over['n'+i] = {...pp, show:1};
+      gone['p'+i] = {...pp, show:0}; gone['n'+i] = {...pp, show:0};
+    }
+    apply(out);
+    demo.introTimer = setTimeout(() => {
+      for (let i = shown; i < before; i++) demo.tiles['n'+i].el.classList.add('over');
+      apply(over);
+      demo.introTimer = setTimeout(() => {
+        for (let i = shown; i < before; i++) stagePop(intro['p'+i].x, intro['p'+i].y);
+        apply(gone);
+        demo.introTimer = setTimeout(() => { for (let i = shown; i < before; i++) demo.tiles['n'+i].el.classList.remove('over'); }, 400);
+      }, 650);
+    }, 550);
+  } else apply(st);
+  if (snapHandle) placeHandle(g*U);
+  const done = g === demo.h;
+  const top = $('#gTop'), left = $('#gLeft');
+  top.style.width = g*U + 'px'; left.style.height = g*U + 'px';
+  top.querySelector('span').textContent = left.querySelector('span').textContent = g;
+  demo.stage.querySelectorAll('.d-dim:not([data-x])').forEach(e => e.classList.toggle('show', g > 0));
+  $('#gGrow').classList.toggle('done', done);
+  clearTimeout(demo.partTimer);
+  if (done && changed) playParts();
+  else showParts(demo.stage, done ? 'all' : null);
+  demo.handle.classList.toggle('done', done);
+  demo.handle.classList.toggle('idle', g === 0);
+  if (changed && done){ const sq = demo.tiles.sq.el; sq.classList.remove('pulse'); void sq.offsetWidth; sq.classList.add('pulse'); }
+  dragUI();
+}
+function dragUI(){
+  if (demo.kind !== 'drag' || !demo.handle) return;
+  const {b, c, h, need, g} = demo, e0 = `${X2} + ${coef(b)}${X}${signed(c)}`, st = $('#status');
+  const {used, extra} = dragState(g);
+  if (g === 0){
+    $('#expr').innerHTML = e0;
+    st.textContent = 'Drag the round handle on the corner of the x² square down and to the right.';
+    st.className = 'status hint';
+  } else if (g < h){
+    $('#expr').innerHTML = `(${X} + ${g})<sup>2</sup><span class="eq">=</span>${X2} + ${coef(2*g)}${X} + ${g*g}`;
+    st.textContent = `Each side is x + ${g}. That uses ${2*g} of the ${b} x tiles and ${g*g} one${g*g > 1 ? 's' : ''}`
+      + (!extra ? '.' : demo.short === 'holes'
+          ? `, but there ${extra > 1 ? `are only ${c}, so ${extra} spaces stay empty. Each empty space counts as −1.` : `are only ${c}, so 1 space stays empty. It counts as −1.`}`
+          : `, so ${extra} zero pair${extra > 1 ? 's' : ''} make up the shortfall.`) + ' Keep going.';
+    st.className = 'status hint';
+  } else {
+    const fin = `(${X} + ${h})<sup>2</sup>${signed(c - need)}`;
+    $('#expr').innerHTML = demo.partK != null ? partsExpr(h, false, demo.partK) : demo.leftShown ? `${e0}<span class="eq">=</span>(${X} + ${h})<sup>2</sup> ${leftRectTerm(c - need)}` : `${e0}<span class="eq">=</span>${fin}`;
+    st.textContent = `Square complete! Each side is x + ${h}, and each coloured part is a length × width. `
+      + (c === need ? `The ${need} ones fill the corner exactly.` : c > need ? `${c - need} one${c - need > 1 ? 's are' : ' is'} left over.`
+         : demo.short === 'holes' ? `${extra} space${extra > 1 ? 's are' : ' is'} missing from the corner, so take away ${extra}.`
+         : demo.gapsShown ? `The ${extra} zero pair${extra > 1 ? 's' : ''} cancelled, leaving ${extra} gap${extra > 1 ? 's' : ''} in the corner: a full square with ${extra} missing.`
+         : `${extra} zero pair${extra > 1 ? 's' : ''} filled the corner, leaving −${extra}.`);
+    st.className = 'status good';
+  }
+  $('#expr').classList.toggle('long', txt($('#expr').innerHTML).length > 24);
+  $('#gMode').hidden = !demo.k;
+  $('#gMode').querySelectorAll('button').forEach(bt => bt.setAttribute('aria-pressed', bt.dataset.m === demo.short));
+  $('#gReset').disabled = g === 0 && !demo.showTimer;
+  $('#gShow').disabled = false;
+  $('#gShow').querySelector('span').textContent = demo.showTimer ? 'Pause' : g === h ? 'Show parts' : 'Show me';
+  $('#gSteps').querySelectorAll('i').forEach((d, j) => { d.className = j === g ? 'on' : j < g ? 'done' : ''; });
+}
+function bindHandle(hd){
+  let start = null;
+  hd.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation(); stopShow();
+    hd.setPointerCapture(e.pointerId);
+    start = { x: e.clientX, y: e.clientY, d: demo.d };
+    hd.classList.add('grab'); demo.layer.classList.remove('d-anim');
+  });
+  hd.addEventListener('pointermove', e => {
+    if (!start) return;
+    const k = demo.scale || 1, delta = ((e.clientX - start.x) + (e.clientY - start.y)) / 2 / k;
+    const d = clamp(start.d + delta, 0, demo.h*U);
+    placeHandle(d);
+    const g = Math.round(d / U);
+    if (g !== demo.g) setLevel(g, false);
+  });
+  const end = () => {
+    if (!start) return;
+    start = null; hd.classList.remove('grab'); demo.layer.classList.add('d-anim');
+    setLevel(Math.round(demo.d / U), true);
+  };
+  hd.addEventListener('pointerup', end); hd.addEventListener('pointercancel', end);
+}
+function stopShow(){ clearInterval(demo.showTimer); demo.showTimer = null; if (demo.on && demo.kind === 'drag') dragUI(); }
+$('#gMode').addEventListener('click', e => {
+  const bt = e.target.closest('button'); if (!bt || bt.dataset.m === demo.short) return;
+  demo.short = bt.dataset.m; setLevel(demo.g, false, true);
+});
+$('#gReset').onclick = () => { stopShow(); setLevel(0, true); };
+$('#gShow').onclick = () => {
+  if (demo.showTimer){ stopShow(); return; }
+  if (demo.g >= demo.h){ playParts(); return; }
+  demo.showTimer = setInterval(() => {
+    setLevel(demo.g + 1, true);
+    if (demo.g >= demo.h) stopShow();
+  }, reduce ? 1400 : 900);
+  dragUI();
+};
+
+
+/* ---------- zero pairs explainer ---------- */
+function planZero(){
+  const tiles = {}, steps = [], st = {};
+  const add = (id, t, s) => { tiles[id] = {t, s}; st[id] = {x:0, y:0, show:0}; };
+  const at = (id, x, y, extra = {}) => { st[id] = {x, y, show:1, ...extra}; };
+  const hide = (...ids) => ids.forEach(id => { st[id].show = 0; });
+  // the negative piece slides onto the positive one, then both disappear
+  const meet = (a, b) => { const [p, n] = tiles[a].s > 0 ? [a, b] : [b, a], {x, y} = st[p]; st[p] = {x, y, show:0, zap:1}; st[n] = {x, y, show:0, zap:1}; };
+  const push = (caption, expr, extras = []) => { steps.push({ st: JSON.parse(JSON.stringify(st)), caption, expr, extras }); };
+  const clearAll = () => Object.keys(st).forEach(id => { st[id].show = 0; });
+  const R = 36;   // one ball plus a gap
+
+  // 1. what a zero pair is
+  add('p1','one',1); add('n1','one',-1); add('xp','x',1); add('xn','x',-1);
+  at('p1', 110, 60); at('n1', 220, 60);
+  push('What is a zero pair? A +1 ball and a −1 ball together make zero, because 1 + (−1) = 0.', '1 + (−1) = 0');
+  meet('p1','n1');
+  push('Slide the −1 ball over the +1 ball. They cancel out and nothing is left.', '0');
+  at('xp', 90, 60); at('xn', 240, 60);
+  push('It works for x tiles too. x and −x are a zero pair: x + (−x) = 0.', `${X} + (−${X}) = 0`);
+  meet('xp','xn');
+  push('Slide −x over x. They cancel and leave nothing.', '0');
+  add('qp','x2',1); add('qn','x2',-1);
+  at('qp', 90, 60); at('qn', 240, 60);
+  push('x² squares work the same way: x² + (−x²) = 0.', `${X2} + (−${X2}) = 0`);
+  meet('qp','qn');
+  push('Slide −x² over x². They cancel and leave nothing.', '0');
+
+  // 2. adding zero changes nothing
+  clearAll();
+  for (let i = 0; i < 3; i++){ add('a'+i,'one',1); at('a'+i, 60 + i*R, 60); }
+  push('Adding zero changes nothing. Start with 3 balls.', '3');
+  add('zp','one',1); add('zn','one',-1); at('zp', 60 + 3*R, 60); at('zn', 60 + 3*R, 60 + R + 8);
+  push('Add a zero pair. Now there are 4 positive balls and 1 negative ball, but the value is still 3.', '3 + 1 + (−1) = 3');
+  meet('zp','zn');
+  push('Slide the −1 over the +1. The pair cancels and 3 is left, the same as before.', '3');
+
+  // 3. taking away more than you have
+  clearAll();
+  for (let i = 0; i < 2; i++){ add('b'+i,'one',1); at('b'+i, 60 + i*R, 50); }
+  for (let i = 0; i < 3; i++){ add('cp'+i,'one',1); add('cn'+i,'one',-1); }
+  push('Work out 2 − 5. You need to take away 5 positive balls, but there are only 2.', '2 − 5');
+  for (let i = 0; i < 3; i++){ at('cp'+i, 60 + (2 + i)*R, 50); at('cn'+i, 60 + (2 + i)*R, 50 + R + 10); }
+  push('Add 3 zero pairs. The value is still 2, but now there are 5 positive balls to take away.', '2 + 3 + (−3)');
+  for (const id of ['b0','b1','cp0','cp1','cp2']) st[id] = {...st[id], y: -10, show:0};
+  push('Take away the 5 positive balls. 3 negative balls are left, so 2 − 5 = −3.', '2 − 5 = −3');
+
+  // 4. moving a term across an equation
+  clearAll();
+  const mid = 175;
+  add('dx','x',1); at('dx', 20 + L/2, 50);
+  for (let i = 0; i < 3; i++){ add('dl'+i,'one',1); at('dl'+i, 32 + i*R, 100); add('dln'+i,'one',-1); st['dln'+i] = {x: 32 + i*R, y: 150, show:0}; }
+  for (let i = 0; i < 7; i++){ add('dr'+i,'one',1); at('dr'+i, mid + 30 + (i % 4)*R, i < 4 ? 50 : 100); }
+  for (let i = 0; i < 3; i++){ add('drn'+i,'one',-1); st['drn'+i] = {x: mid + 30 + i*R, y: 150, show:0}; }
+  push('Solve x + 3 = 7. Both sides must always stay balanced.', `${X} + 3 = 7`, ['eq']);
+  for (let i = 0; i < 3; i++){ st['dln'+i].show = 1; st['drn'+i].show = 1; }
+  push('Add 3 negative balls (−3) to both sides. The same change on both sides keeps the balance.', `${X} + 3 + (−3) = 7 + (−3)`, ['eq']);
+  for (let i = 0; i < 3; i++){ meet('dl'+i, 'dln'+i); meet('dr'+(4 + i), 'drn'+i); }
+  push('Cancel the zero pairs on each side. x = 4. The +3 seemed to move across the = and turn into −3, but really we added zero pairs.', `${X} = 4`, ['eq']);
+
+  // 5. filling a gap
+  clearAll();
+  const ox = 30, oy = 10;
+  add('esq','x2',1); at('esq', ox + L/2, oy + L/2);
+  add('ex1','x',1); at('ex1', ox + L/2, oy + L + U/2);
+  add('ex2','x',1); at('ex2', ox + L + U/2, oy + L/2, {rot:1});
+  push('Zero pairs can also fill a gap. x² + 2x is almost a square, but one corner is empty.', `${X2} + 2${X}`, ['gap']);
+  add('ep','one',1); add('en','one',-1); at('ep', 250, 50); at('en', 250, 50 + R + 10);
+  push('Add a zero pair: +1 and −1. Adding zero keeps the value the same.', `${X2} + 2${X} + 1 + (−1)`, ['gap']);
+  at('ep', ox + L + U/2, oy + L + U/2);
+  push('The +1 fills the corner and the −1 waits outside. So x² + 2x = (x + 1)² − 1. Try the Drag demo for more.', `${X2} + 2${X} = (${X} + 1)<sup>2</sup> − 1`);
+
+  // tiles added in a later scene are missing from earlier snapshots: park them, hidden, where they first appear
+  for (const id in tiles){
+    const first = steps.find(stp => stp.st[id])?.st[id] || {x:0, y:0};
+    for (const stp of steps) if (!stp.st[id]) stp.st[id] = {...first, show:0};
+  }
+  demo.steps = steps; demo.tiles = tiles; demo.parts = [];
+  demo.h = 1; demo.S = 0; demo.labTop = demo.labLeft = ''; demo.P = 14;
+  demo.W = demo.P + mid + 30 + 3*R + U/2 + 14; demo.H = demo.P + 200;
+  demo.extraHTML = `
+    <div class="d-box z-eq" data-x="eq" style="left:${mid}px;top:20px;height:150px"><span>=</span></div>
+    <div class="d-box z-side" data-x="eq" style="left:20px;top:2px">Left side</div>
+    <div class="d-box z-side" data-x="eq" style="left:${mid + 30 - U/2}px;top:2px">Right side</div>
+    <div class="d-box z-gap" data-x="gap" style="left:${ox + L}px;top:${oy + L}px;width:${U}px;height:${U}px"></div>`;
+}
+
+/* ---------- factor a binomial: difference of two squares ---------- */
+// difference of two squares, plus common-factor binomials (gcf: +1 for x² + ax, −1 for x² − ax)
+const BINOMS = [
+  {a:1, gcf:1}, {a:2, gcf:1}, {a:3, gcf:1}, {a:4, gcf:1}, {a:5, gcf:1},     // x² + ax = x(x + a)
+  {a:1, gcf:-1}, {a:2, gcf:-1}, {a:3, gcf:-1},                               // x² − ax = x(x − a)
+  {a:1}, {a:2}, {a:3}, {a:4}, {a:5}, {a:6}];                                 // x² − a² = (x + a)(x − a)
+// Every factor pair r × c of n with r ≤ c
+const divisorPairs = n => { const out = []; for (let r = 1; r*r <= n; r++) if (n % r === 0) out.push([r, n/r]); return out; };
+const PAIRS_MAX = 36;
+function pairsSummary(n, pairs){
+  if (n === 1) return ' 1 makes only one rectangle: a single ball, 1 × 1. 1 is a square number, but it isn\'t prime, because a prime has exactly two factors and 1 has only one.';
+  if (pairs.length === 1) return ` That's the only rectangle ${n} can make, so ${n} is prime: its only factors are 1 and ${n}.`;
+  const sq = pairs.find(([r, c]) => r === c), lastP = pairs[pairs.length - 1];
+  return ` So ${n} has ${pairs.length} factor pairs: ${pairs.map(([r, c]) => `${r} × ${c}`).join(', ').replace(/, ([^,]*)$/, ' and $1')}.`
+    + (sq ? ` One rectangle is a square, ${sq[0]} × ${sq[0]}, so ${n} is a square number.` : '')
+    + (lastP[0] !== lastP[1] ? ` (Turning a rectangle round, like ${lastP[1]} × ${lastP[0]}, gives the same pair.)` : '');
+}
+// Steps for the Factor pairs demo: for each number, loose balls, then every rectangle they can make.
+function factorIntro(steps, tiles, nums, custom){
+  const plan = nums.map(n => ({ n, pairs: divisorPairs(n) }));
+  const N = Math.max(...nums);
+  for (let i = 0; i < N; i++) tiles['u'+i] = {t:'one', s:1};
+  const loose = i => ({ x: (i % 6)*(U + 8) + U/2, y: Math.floor(i/6)*(U + 8) + U/2 });
+  const tight = (i, c) => ({ x: (i % c)*U + U/2, y: Math.floor(i/c)*U + U/2 });
+  const quiet = {};
+  for (let i = 0; i < N; i++) quiet['u'+i] = {...tight(i, Math.min(N, 6)), show:0};   // balls a number doesn't use stay hidden
+  let html = '';
+  const pair = (r, c, on) => on ? `${cn(r, 'tg')} × ${cn(c)}` : `${r} × ${c}`;
+  plan.forEach(({n, pairs}, k) => {
+    const st0 = JSON.parse(JSON.stringify(quiet));
+    for (let i = 0; i < n; i++) st0['u'+i] = {...loose(i), show:1};
+    steps.push({ st: st0, expr: `${n}`, bw: Math.min(n, 6)*(U + 8) - 8, bh: Math.ceil(n/6)*(U + 8) - 8,
+      caption: k === 0 ? `Factoring means arranging unit balls into rectangles with no gaps. Start with ${n} ball${n > 1 ? 's' : ''}.` : `Now try ${n} balls.` });
+    pairs.forEach(([r, c], j) => {
+      const stj = JSON.parse(JSON.stringify(quiet));
+      for (let i = 0; i < n; i++) stj['u'+i] = {...tight(i, c), show:1};
+      const key = `r${n}x${r}x${c}`, last = j === pairs.length - 1;
+      const expr = `${n}<span class="eq">=</span>` + pairs.slice(0, j + 1).map(([a, b], q) => pair(a, b, q === j)).join('<span class="eq">=</span>');
+      let caption = `${r === 1 ? 'One row' : `${r} rows`} of ${c}: ${n} = ${r} × ${c}.`;
+      if (last) caption += pairsSummary(n, pairs);
+      if (last && k === plan.length - 1) caption += custom ? ' Tap Your turn to build them yourself.' : ' Next, the Factorise demo uses the same idea with x² and x tiles.';
+      steps.push({ st: stj, expr, caption, extras:[key], bw: c*U, bh: r*U });
+      const w = c*U, h = r*U;
+      html += `<div class="d-box d-part d-left" data-x="${key}" style="left:-2px;top:-2px;width:${w + 4}px;height:${h + 4}px;--ct:${CN};--cs:${CG}"><b>${n}</b></div>
+        <div class="d-box d-dim" data-x="${key}" style="left:0;top:-26px;width:${w}px;height:20px;--dc:${CN}"><span>${c}</span></div>
+        <div class="d-box d-dim vert" data-x="${key}" style="top:0;left:-26px;height:${h}px;width:20px;--dc:${CG}"><span>${r}</span></div>`;
+    });
+  });
+  return html;
+}
+// Factor pairs demo: 12, 9 and 7 by default, or the number the user typed in
+function planPairs(){
+  const tiles = {}, steps = [], nums = demo.pairsN ? [demo.pairsN] : [12, 9, 7];
+  demo.extraHTML = factorIntro(steps, tiles, nums, !!demo.pairsN);
+  demo.steps = steps; demo.tiles = tiles; demo.parts = [];
+  demo.h = 1; demo.S = 0; demo.labTop = demo.labLeft = '';
+  demo.P = 34;
+  demo.W = demo.P + Math.max(...steps.map(t => t.bw)) + 12; demo.H = demo.P + Math.max(...steps.map(t => t.bh)) + 12;
+}
+function gcfExpr(a, neg, part){
+  const P = typeof part === 'number' ? part : -1, sg = neg ? '−' : '+', t1 = `${coef(a)}${X}`;
+  const lhs = `${cx(P === 0 || P === 1)}(${cx(P === 0)} ${sg} ${cn(a, 'tn', P === 1)})<span class="eq">=</span>`;
+  return lhs + (P === 0 ? term(X2, CX, CX) : `${X2} ${sg} ${P === 1 ? term(t1, CN, CX) : t1}`);
+}
+// x² + ax and x² − ax: the x tiles stand beside the square to make one x by (x ± a) rectangle
+function planFactorGcf(a, neg){
+  const S = L + a*U, G = 6, colX = S + 26, sg = neg ? '−' : '+';
+  const tiles = { sq:{t:'x2', s:1} };
+  for (let i = 0; i < a; i++) tiles['x'+i] = {t:'x', s: neg ? -1 : 1};
+  const steps = [], st = {};
+  const push = (caption, expr, box = '') => steps.push({ st: JSON.parse(JSON.stringify(st)), caption, expr, box });
+  const e0 = `${X2} ${sg} ${coef(a)}${X}`, fin = `${X}(${X} ${sg} ${a})`;
+  st.sq = {x:L/2, y:L/2, show:1};
+  for (let i = 0; i < a; i++) st['x'+i] = {x: colX + L/2, y: i*(U + G) + U/2, show:1};
+  push(`Start with ${txt(e0)}: one x² square and ${a} ${neg ? 'negative ' : ''}x tile${a > 1 ? 's' : ''}. Every tile has a side of length x, so x is a common factor.`, e0);
+  for (let i = 0; i < a; i++) st['x'+i] = {x: L + i*U + U/2, y: L/2, rot:1, show:1};
+  push(`Stand the x tiles upright along the right side of the square. Together they make one rectangle.`, e0);
+  push(`The rectangle is x high and x ${sg} ${a} long, so ${txt(e0)} = x(x ${sg} ${a}).`, `${e0}<span class="eq">=</span>${fin}`, 'full');
+  push(`Now multiply the sides, one part at a time. Purple x across the top × purple x down the side = x².`, gcfExpr(a, neg, 0), 'parts0');
+  push(`Orange ${neg ? '−' : ''}${a} across the top × purple x down the side = ${neg ? '−' : ''}${coef(a)}x.`, gcfExpr(a, neg, 1), 'parts1');
+  push(`So ${txt(e0)} = x(x ${sg} ${a}).`, `${e0}<span class="eq">=</span>${fin}`, 'partsAll');
+  demo.parts = areaParts(a, [X2, `${neg ? '−' : ''}${coef(a)}${X}`]).slice(0, 2); demo.sideNeg = false;
+  demo.extraHTML = '';
+  demo.steps = steps; demo.tiles = tiles; demo.h = a; demo.S = S; demo.FH = L; demo.labTop = `${neg ? '−' : ''}${a}`; demo.labLeft = '';
+  let mx = 0, my = 0;
+  for (const step of steps) for (const id in step.st){
+    const p = step.st[id], t = T[tiles[id].t], w = p.rot ? t.h : t.w, hh = p.rot ? t.w : t.h;
+    mx = Math.max(mx, p.x + w/2); my = Math.max(my, p.y + hh/2);
+  }
+  demo.P = 34; demo.W = demo.P + Math.max(mx, S) + 12; demo.H = demo.P + Math.max(my, L) + 12;
+}
+function planFactor(){
+  if (BINOMS[demo.ex].gcf) return planFactorGcf(BINOMS[demo.ex].a, BINOMS[demo.ex].gcf < 0);
+  const {a} = BINOMS[demo.ex], n = a*a, S = L + a*U, G = 6;
+  const colX = L + 20, spareX = Math.max(S, colX + 2*L + 8) + 28;
+  const spare = i => ({ x: spareX + (i % 3)*(U + G) + U/2, y: Math.floor(i/3)*(U + G) + U/2 });
+  const cell = i => ({ x: L + (i % a)*U + U/2, y: L + Math.floor(i/a)*U + U/2 });
+  const tiles = { sq:{t:'x2', s:1} };
+  for (let i = 0; i < n; i++) tiles['o'+i] = {t:'one', s:-1};
+  for (let i = 0; i < a; i++){ tiles['p'+i] = {t:'x', s:1}; tiles['n'+i] = {t:'x', s:-1}; }
+
+  const e0 = `${X2} − ${n}`, e1 = `${X2} + ${coef(a)}${X} − ${coef(a)}${X} − ${n}`;
+  const fin = `(${X} + ${a})(${X} − ${a})`;
+  const steps = [], st = {};
+  const push = (caption, expr, box = '') => steps.push({ st: JSON.parse(JSON.stringify(st)), caption, expr, box });
+
+  st.sq = {x:L/2, y:L/2, show:1};
+  for (let i = 0; i < n; i++) st['o'+i] = {...spare(i), show:1};
+  for (let i = 0; i < a; i++){
+    st['p'+i] = {x: colX + L/2, y: i*(U + G) + U/2, show:0};
+    st['n'+i] = {x: colX + L + 8 + L/2, y: i*(U + G) + U/2, show:0};
+  }
+  push(`Start with ${txt(e0)}: one x² square and ${n} negative ball${n > 1 ? 's' : ''}. They can't make a rectangle on their own.`, e0);
+
+  for (let i = 0; i < a; i++){ st['p'+i].show = 1; st['n'+i].show = 1; }
+  push(`Add ${a} zero pair${a > 1 ? 's' : ''} of x tiles: ${a} × +x and ${a} × −x. Adding zero keeps the value the same.`, e1);
+
+  for (let i = 0; i < a; i++) st['p'+i] = {x: L + i*U + U/2, y: L/2, rot:1, show:1};
+  push(`Stand the +x tiles upright down the right side of the square.`, e1);
+
+  for (let i = 0; i < a; i++) st['n'+i] = {x: L/2, y: L + i*U + U/2, show:1};
+  push(`Lay the −x tiles along the bottom.`, e1);
+
+  push(`The gap in the corner is ${a} by ${a}, room for ${n} ball${n > 1 ? 's' : ''}. That's exactly how many −1 balls there are.`, e1, 'corner');
+
+  for (let i = 0; i < n; i++) st['o'+i] = {...cell(i), show:1};
+  push(`Move the −1 balls into the corner. Every piece is used and the shape is a rectangle.`, e1, 'corner');
+
+  demo.parts = areaParts(a, [X2, `${coef(a)}${X}`, `−${coef(a)}${X}`, `−${a*a}`], true); demo.sideNeg = true;
+  push(`Read the sides. Across the top: x + ${a}. Down the side, the negative row gives x − ${a}. So ${txt(e0)} = ${txt(fin)}.`,
+       `${e0}<span class="eq">=</span>${fin}`, 'full');
+  {
+    push(`Now multiply the sides, one part at a time. Purple x across the top × purple x down the side = x².`, partsExpr(a, true, 0), 'parts0');
+    push(`Orange +${a} across the top × purple x down the side = ${coef(a)}x.`, partsExpr(a, true, 1), 'parts1');
+    push(`Purple x across the top × green −${a} down the side = −${coef(a)}x.`, partsExpr(a, true, 2), 'parts2');
+    push(`Orange +${a} across the top × green −${a} down the side = −${a*a}. A positive times a negative is negative.`, partsExpr(a, true, 3), 'parts3');
+    push(`Add the parts. +${coef(a)}x and −${coef(a)}x are a zero pair, so (x + ${a})(x − ${a}) = x² − ${a*a}.`, partsExpr(a, true, 'all'), 'partsAll');
+    push(`So x² − ${a*a} = (x + ${a})(x − ${a}).`, `${X2} − ${a*a}<span class="eq">=</span>(${X} + ${a})(${X} − ${a})`, 'partsAll');
+  }
+
+  demo.extraHTML = '';
+  demo.steps = steps; demo.tiles = tiles; demo.h = a; demo.S = S; demo.labTop = `+${a}`; demo.labLeft = `−${a}`;
+  let mx = 0, my = 0;
+  for (const step of steps) for (const id in step.st){
+    const p = step.st[id], t = T[tiles[id].t], w = p.rot ? t.h : t.w, hh = p.rot ? t.w : t.h;
+    mx = Math.max(mx, p.x + w/2); my = Math.max(my, p.y + hh/2);
+  }
+  const P = 34;
+  demo.P = P; demo.W = P + Math.max(mx, S) + 12; demo.H = P + Math.max(my, S) + 12;
+}
+
+/* ---------- complete-the-cube demo (3D) ---------- */
+// Lengths in unit-ball widths. LX = the unknown length of x, deliberately not a whole number.
+const LX = 2.6;
+// order in which the blocks of the finished cube are pulled out: x³, the three slabs, the three rods, the corner
+const CUBE_SEQ = [0, 1, 2, 4, 3, 5, 6, 7];
+const CUBES = [
+  {h:1, c:3, d:1}, {h:2, c:12, d:8},                                                     // perfect cubes
+  {h:1, c:4, d:1}, {h:1, c:3, d:5}, {h:1, c:5, d:2}, {h:1, c:6, d:4}, {h:2, c:12, d:10}, {h:2, c:14, d:8},   // pieces left over
+  {h:1, c:2, d:1}, {h:1, c:3, d:0}, {h:2, c:12, d:3}, {h:2, c:10, d:5}, {h:2, c:8, d:8}, {h:2, c:12, d:0}];  // zero pairs needed
+const X3 = '<i>x</i><sup>3</sup>';
+const signedX = n => n > 0 ? ` + ${coef(n)}${X}` : n < 0 ? ` − ${coef(-n)}${X}` : '';
+const cubeExpr = e => `${X3} + ${3*e.h}${X2}${signedX(e.c)}${signed(e.d)}`;
+let C = null;
+
+function planCube(){
+  const {h, c, d} = CUBES[demo.ex], b = 3*h, needR = 3*h*h, needU = h*h*h;
+  const kR = Math.max(0, needR - c), kU = Math.max(0, needU - d), Lx = LX, S = Lx + h;
+  const R90 = Math.PI/2;
+  const pieces = { cube:{t:'x3', s:1} };
+  for (let i = 0; i < b; i++) pieces['s'+i] = {t:'x2', s:1};
+  for (let i = 0; i < c; i++) pieces['r'+i] = {t:'x', s:1};
+  for (let i = 0; i < d; i++) pieces['u'+i] = {t:'one', s:1};
+  for (let i = 0; i < kR; i++){ pieces['rp'+i] = {t:'x', s:1}; pieces['rn'+i] = {t:'x', s:-1}; }
+  for (let i = 0; i < kU; i++){ pieces['up'+i] = {t:'one', s:1}; pieces['un'+i] = {t:'one', s:-1}; }
+
+  // floor zones
+  const zS = S + 1.6 + Lx/2;                       // slab piles, in front
+  const pileX = g => Lx/2 + (g - 1)*(Lx + 0.8);
+  const xR0 = Math.max(S, 2*Lx + 0.8) + 1.6;        // rods, to the right of the cube and the piles
+  const rodSlot = i => [xR0 + Math.floor(i/6)*(Lx + 0.7) + Lx/2, 0.5, 0.6 + (i % 6)*1.2];
+  const uz0 = Math.max(zS - Lx/2, 0.6 + 6*1.2) + 0.5; // balls sit in front of the rod rows
+  const unitSlot = i => [xR0 + 0.5 + (i % 4)*1.15, 0.5, uz0 + Math.floor(i/4)*1.15];
+  // target cells
+  const rodCell = i => {                            // three edge gaps, h*h rods each
+    const g = Math.floor(i/(h*h)), j = i % (h*h), a = Math.floor(j/h), q = j % h;
+    if (g === 0) return {p:[Lx + a + .5, Lx + q + .5, Lx/2], r:[0, R90, 0]};   // runs front to back
+    if (g === 1) return {p:[Lx/2, Lx + a + .5, Lx + q + .5], r:[0, 0, 0]};     // runs left to right
+    return {p:[Lx + a + .5, Lx/2, Lx + q + .5], r:[0, 0, R90]};                // runs up and down
+  };
+  const unitCell = i => [Lx + (i % h) + .5, Lx + Math.floor(i/h) % h + .5, Lx + Math.floor(i/(h*h)) + .5];
+
+  const st = {}, steps = [];
+  const push = (caption, expr, box = '') => steps.push({ st: JSON.parse(JSON.stringify(st)), caption, expr, box });
+  const e0 = cubeExpr({h, c, d});
+  const eSplit = `${X3} + ${coef(h)}${X2} + ${coef(h)}${X2} + ${coef(h)}${X2}${signedX(c)}${signed(d)}`;
+
+  st.cube = {p:[Lx/2, Lx/2, Lx/2], r:[0,0,0], show:1};
+  for (let i = 0; i < b; i++) st['s'+i] = {p:[pileX(1), i + .5, zS], r:[R90,0,0], show:1};
+  for (let i = 0; i < c; i++) st['r'+i] = {p:rodSlot(i), r:[0,0,0], show:1};
+  for (let i = 0; i < d; i++) st['u'+i] = {p:unitSlot(i), r:[0,0,0], show:1};
+  // zero pairs are introduced side by side on the floor: + piece first, − piece next to it
+  const rodPair = (i, side) => [xR0 + side*(Lx + 0.7) + Lx/2, 0.5, 0.6 + i*1.2];
+  const unitPair = (i, side) => [xR0 + 0.5 + side*1.15, 0.5, uz0 + i*1.15];
+  for (let i = 0; i < kR; i++){ st['rp'+i] = {p:rodPair(i, 0), r:[0,0,0], show:0}; st['rn'+i] = {p:rodPair(i, 1), r:[0,0,0], show:0}; }
+  for (let i = 0; i < kU; i++){ st['up'+i] = {p:unitPair(i, 0), r:[0,0,0], show:0}; st['un'+i] = {p:unitPair(i, 1), r:[0,0,0], show:0}; }
+  push(`Start with ${txt(e0)}: one x³ cube, ${b} x² slabs, ${c} x rods${d ? ` and ${d} unit ball${d > 1 ? 's' : ''}` : ' and no unit balls'}.`, e0);
+
+  for (let i = 0; i < b; i++){ const g = Math.floor(i/h); st['s'+i].p = [pileX(g), (i % h) + .5, zS]; }
+  push(`Split the ${b} slabs into three equal piles of ${h}.`, eSplit);
+
+  for (let i = 0; i < h; i++) st['s'+i] = {p:[Lx + i + .5, Lx/2, Lx/2], r:[0,R90,0], show:1};
+  push(`Stand the first pile against the right face of the cube.`, eSplit);
+  for (let i = h; i < 2*h; i++) st['s'+i] = {p:[Lx/2, Lx + (i - h) + .5, Lx/2], r:[R90,0,0], show:1};
+  push(`Lay the second pile flat on top.`, eSplit);
+  for (let i = 2*h; i < 3*h; i++) st['s'+i] = {p:[Lx/2, Lx/2, Lx + (i - 2*h) + .5], r:[0,0,0], show:1};
+  push(`Stand the third pile against the front.`, eSplit);
+
+  push(`Three edges are now missing. Each gap is ${h} by ${h} by x, so together they need ${needR} x rods.`, eSplit, 'edges');
+
+  const mR = Math.min(c, needR);
+  // slot the rods in one edge gap at a time (h*h rods per gap)
+  const GAP = ['top-right', 'top-front', 'front-right'], perGap = h*h;
+  const gapOf = i => Math.floor(i / perGap);
+  for (let i = mR; i < c; i++) st['r'+i] = {p:rodSlot(i - mR), r:[0,0,0], show:1};   // spare rods close up on the floor
+  const realGaps = [0, 1, 2].filter(g => g*perGap < mR);
+  if (!realGaps.length) push(`There are no rods to slot in, so all three edge gaps still need ${needR} rods.`, eSplit, 'edges');
+  realGaps.forEach((g, j) => {
+    const ids = [];
+    for (let i = g*perGap; i < Math.min(mR, (g + 1)*perGap); i++){ st['r'+i] = {...rodCell(i), show:1}; ids.push(i); }
+    const last = j === realGaps.length - 1, n = ids.length, gapFull = n === perGap;
+    let cap = `Slot ${n} rod${n > 1 ? 's' : ''} into the ${GAP[g]} edge gap${gapFull ? '' : `, which still needs ${perGap - n} more`}.`;
+    if (last) cap += c === needR ? ' All three gaps are full, and every rod fits exactly.'
+                   : c > needR ? ` All three gaps are full. ${c - needR} rod${c - needR > 1 ? 's are' : ' is'} left over.`
+                   : ` The gaps still need ${kR} more rod${kR > 1 ? 's' : ''} in all.`;
+    push(cap, eSplit, 'edges');
+  });
+  let eR = eSplit;
+  if (kR){
+    for (let i = 0; i < kR; i++){ st['rp'+i].show = 1; st['rn'+i].show = 1; }
+    push(`Add ${kR} zero pair${kR > 1 ? 's' : ''} of rods: ${kR} × +x and ${kR} × −x. Adding zero keeps the value the same.`,
+         `${X3} + ${b}${X2} + ${coef(c)}${X} + ${coef(kR)}${X} + (−${coef(kR)}${X})${signed(d)}`, 'edges');
+    eR = `${X3} + ${b}${X2} + ${needR}${X} − ${coef(kR)}${X}${signed(d)}`;
+    const pairGaps = [...new Set(Array.from({length: kR}, (_, i) => gapOf(mR + i)))];
+    pairGaps.forEach((g, j) => {
+      let n = 0;
+      for (let i = 0; i < kR; i++) if (gapOf(mR + i) === g){ st['rp'+i] = {...rodCell(mR + i), show:1}; n++; }
+      push(`Slot ${n} +x rod${n > 1 ? 's' : ''} into the ${GAP[g]} edge gap.` + (j === pairGaps.length - 1 ? (kR > 1 ? ' The −x rods wait outside.' : ' The −x rod waits outside.') : ''), eR, 'edges');
+    });
+  }
+
+  push(`Only the corner is left: ${h} by ${h} by ${h}, so it needs ${needU} unit ball${needU > 1 ? 's' : ''}.`, eR, 'corner');
+  const mU = Math.min(d, needU);
+  for (let i = 0; i < mU; i++) st['u'+i] = {p:unitCell(i), r:[0,0,0], show:1};
+  for (let i = mU; i < d; i++) st['u'+i] = {p:unitSlot(i - mU), r:[0,0,0], show:1};
+  push(d === needU ? `Pack the ${needU} ball${needU > 1 ? 's' : ''} into the corner. ${needU > 1 ? 'They fit' : 'It fits'} exactly.`
+     : d > needU ? `Pack ${needU} ball${needU > 1 ? 's' : ''} into the corner. ${d - needU} ${d - needU > 1 ? 'are' : 'is'} left over.`
+     : d ? `Pack all ${d} ball${d > 1 ? 's' : ''} into the corner. It still needs ${kU} more.` : `There are no balls to pack, so the corner still needs all ${kU}.`, eR, 'corner');
+  if (kU){
+    for (let i = 0; i < kU; i++){ st['up'+i].show = 1; st['un'+i].show = 1; }
+    const xPart = kR ? `${needR}${X} − ${coef(kR)}${X}` : `${coef(c)}${X}`;
+    push(`Add ${kU} zero pair${kU > 1 ? 's' : ''} of balls: ${kU} × +1 and ${kU} × −1. Adding zero keeps the value the same.`,
+         `${X3} + ${b}${X2} + ${xPart}${signed(d)} + ${kU} + (−${kU})`, 'corner');
+    for (let i = 0; i < kU; i++) st['up'+i] = {p:unitCell(mU + i), r:[0,0,0], show:1};
+    push(`Pack the +1 balls into the corner. The −1 balls wait outside.`,
+         `${X3} + ${b}${X2} + ${xPart} + ${needU} − ${kU}`, 'corner');
+  }
+  const fin = `(${X} + ${h})<sup>3</sup>${signedX(c - needR)}${signed(d - needU)}`;
+  push(`The cube is complete. Every edge is x + ${h}, so ${txt(e0)} = ${txt(fin)}.`, `${e0}<span class="eq">=</span>${fin}`, 'full');
+  {
+    // Pull the finished cube apart one block at a time. Every piece inside the cube belongs to exactly one block
+    // (bit 1 = uses the h part across, 2 = up, 4 = towards you); a block moves out by E along each of those axes.
+    const E = 0.7, assembled = JSON.parse(JSON.stringify(st));
+    const blockOf = {};
+    for (const id in st){
+      const q = st[id];
+      if (!q.show || q.p.some(v => v < -0.01 || v > S + 0.01)) continue;
+      blockOf[id] = (q.p[0] > Lx ? 1 : 0) | (q.p[1] > Lx ? 2 : 0) | (q.p[2] > Lx ? 4 : 0);
+    }
+    const side = `(${cx()} + ${cn(h)})`, lhs = `${side}<sup>3</sup><span class="eq">=</span>`;
+    const t1 = `${coef(h)}${X2}`, t2 = `${coef(h*h)}${X}`, t3 = `${h*h*h}`;
+    const terms = [X3, t1, t1, t1, t2, t2, t2, t3];
+    const cols = [[CX, CX], [CX, CN], [CX, CN], [CX, CN], [CN, CX], [CN, CX], [CN, CX], [CN, CN]];
+    const where = { 1:'right', 2:'top', 4:'front', 3:'top-right', 5:'front-right', 6:'top-front' };
+    CUBE_SEQ.forEach((bits, k) => {
+      for (const id in blockOf) if (blockOf[id] === bits) st[id] = {...st[id], p: assembled[id].p.map(v => v > Lx ? v + E : v)};
+      const n = (bits & 1) + ((bits >> 1) & 1) + ((bits >> 2) & 1);
+      const caption = n === 0 ? `Now pull the cube apart, one block at a time. Purple edges are x long, orange edges are ${h} long. The big block stays where it is: x × x × x = x³.`
+        : n === 1 ? `The ${where[bits]} slab block moves out. Two purple edges and one orange: x × x × ${h} = ${txt(t1)}.`
+        : n === 2 ? `The ${where[bits]} rod block moves out. One purple edge and two orange: x × ${h} × ${h} = ${txt(t2)}.`
+        : `The corner block moves out. All orange: ${h} × ${h} × ${h} = ${t3}.`;
+      push(caption, lhs + terms.slice(0, k + 1).map((t, i) => (i ? ' + ' : '') + (i === k ? term(t, ...cols[i]) : t)).join(''), 'c3b' + k);
+    });
+    const total = `${X3} + ${coef(3*h)}${X2} + ${coef(3*h*h)}${X} + ${t3}`;
+    push(`Add the blocks: x³ + three lots of ${txt(t1)} + three lots of ${txt(t2)} + ${t3}. So (x + ${h})³ = x³ + ${coef(3*h)}x² + ${coef(3*h*h)}x + ${t3}.`, `${lhs}${total}`, 'c3partsAll');
+    // put the blocks back together: one cube whose three edges are each x + h
+    Object.assign(st, assembled);
+    push(`Put the blocks back together. Every edge of the cube is x + ${h}, so (x + ${h})(x + ${h})(x + ${h}) = x³ + ${coef(3*h)}x² + ${coef(3*h*h)}x + ${t3}.`,
+         `${side}${side}${side}<span class="eq">=</span>${total}`, 'c3whole');
+    // pieces left outside the cube are the rest of the answer
+    const left = [];
+    for (let i = needR; i < c; i++) left.push('r'+i);
+    for (let i = 0; i < kR; i++) left.push('rn'+i);
+    for (let i = needU; i < d; i++) left.push('u'+i);
+    for (let i = 0; i < kU; i++) left.push('un'+i);
+    if (left.length){
+      const rx = c - needR, ru = d - needU, bits = [];
+      if (rx) bits.push(rx > 0 ? term(`+ ${coef(rx)}${X}`, 'var(--b-x)', 'var(--b-x)') : term(`− ${coef(-rx)}${X}`, 'var(--b-neg)', 'var(--b-neg)'));
+      if (ru) bits.push(leftTerm(ru));
+      const words = [];
+      if (rx) words.push(`${Math.abs(rx)} ${rx > 0 ? 'x' : '−x'} rod${Math.abs(rx) > 1 ? 's' : ''}`);
+      if (ru) words.push(`${Math.abs(ru)} ${ru > 0 ? 'unit' : '−1'} ball${Math.abs(ru) > 1 ? 's' : ''}`);
+      push(`${words.join(' and ')} ${left.length > 1 ? 'are' : 'is'} left over outside the cube. So ${txt(e0)} = ${txt(fin)}.`,
+           `${e0}<span class="eq">=</span>(${X} + ${h})<sup>3</sup> ${bits.join(' ')}`, 'c3left');
+      steps[steps.length - 1].hl = left;
+    }
+    push(`So ${txt(e0)} = ${txt(fin)}.`, `${e0}<span class="eq">=</span>${fin}`, 'c3whole');
+  }
+
+  // Prelude: a +x³ cube and a −x³ cube cancel. The −x³ slides into the +x³, then both disappear.
+  pieces.zc = {t:'x3', s:1}; pieces.zn = {t:'x3', s:-1};
+  const home = [Lx/2, Lx/2, Lx/2], away = [Lx/2 + Lx + 1.5, Lx/2, Lx/2], R0 = [0,0,0];
+  for (const stp of steps){ stp.st.zc = {p:home, r:R0, show:0}; stp.st.zn = {p:home, r:R0, show:0}; }
+  const quiet = JSON.parse(JSON.stringify(steps[0].st));
+  for (const id in quiet) quiet[id].show = 0;
+  const pre1 = JSON.parse(JSON.stringify(quiet)), pre2 = JSON.parse(JSON.stringify(quiet));
+  pre1.zc = {p:home, r:R0, show:1}; pre1.zn = {p:away, r:R0, show:1};
+  pre2.zc = {p:home, r:R0, show:0, zap:1}; pre2.zn = {p:home, r:R0, show:0, zap:1};
+  if (demo.ex === 0) steps.unshift(
+    { st: pre1, caption: 'Zero pairs work in 3D too. An x³ cube and a −x³ cube add up to zero.', expr: `${X3} + (−${X3}) = 0` },
+    { st: pre2, caption: 'Slide the −x³ cube into the x³ cube. They cancel and nothing is left.', expr: '0' });
+  demo.steps = steps; demo.pieces = pieces; demo.h = h; demo.S = S;
+  // bounds over every step, for framing the camera
+  const lo = [Infinity, 0, Infinity], hi = [-Infinity, S, -Infinity];
+  for (const step of steps) for (const id in step.st){
+    const p = step.st[id].p;
+    for (const k of [0, 2]){ lo[k] = Math.min(lo[k], p[k] - Lx/2); hi[k] = Math.max(hi[k], p[k] + Lx/2); }
+    hi[1] = Math.max(hi[1], p[1] + .5);
+  }
+  demo.bounds = {lo, hi};
+}
+
+// A box with every edge and corner rounded to radius r: a segmented box whose grid lines bunch up near the
+// edges, with each vertex pushed out to distance r from an inner box. Normals point straight out from that inner box.
+function roundedBox(w, h, d, r, seg = 5){
+  r = Math.min(r, w/2 - 0.001, h/2 - 0.001, d/2 - 0.001);
+  const n = 2*seg + 1, g = new THREE.BoxGeometry(1, 1, 1, n, n, n);
+  const half = [w/2, h/2, d/2], pos = g.attributes.position, nor = g.attributes.normal, v = [0, 0, 0];
+  const remap = (u, hl) => {   // u in [-0.5, 0.5] on the unit box → coordinate on the rounded box
+    const i = Math.round((u + 0.5)*n);
+    return i <= seg ? -hl + r*(i/seg) : i >= n - seg ? hl - r*((n - i)/seg) : 0;
+  };
+  // (getX/setXYZ rather than getComponent, which this version of three.js doesn't have)
+  for (let k = 0; k < pos.count; k++){
+    const u = [pos.getX(k), pos.getY(k), pos.getZ(k)];
+    for (let a = 0; a < 3; a++) v[a] = remap(u[a], half[a]);
+    const inner = v.map((x, a) => Math.max(-(half[a] - r), Math.min(half[a] - r, x)));
+    const dv = v.map((x, a) => x - inner[a]), len = Math.hypot(...dv) || 1;
+    pos.setXYZ(k, inner[0] + dv[0]/len*r, inner[1] + dv[1]/len*r, inner[2] + dv[2]/len*r);
+    nor.setXYZ(k, dv[0]/len, dv[1]/len, dv[2]/len);
+  }
+  pos.needsUpdate = nor.needsUpdate = true;
+  return g;
+}
+function cubeColors(){
+  const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim() || '#888';
+  return { x3:g('--b-x3'), x2:g('--b-x2'), x:g('--b-x'), one:g('--b-one'), neg:g('--b-neg'), accent:g('--accent'), grid:g('--dot'), hlA:g('--hl-a'), hlC:g('--hl-c') };
+}
+function drawCube(){
+  planCube();
+  const hint = document.createElement('div'); hint.className = 'cube-hint'; hint.textContent = 'Drag to turn';
+  const legend = document.createElement('div'); legend.className = 'cube-legend';
+  legend.innerHTML = `<span><b style="--c:var(--b-x3)"></b>x³ cube</span><span><b style="--c:var(--b-x2)"></b>x² slab</span><span><b style="--c:var(--b-x)"></b>x rod</span><span><b class="ub" style="--c:var(--b-one)"></b>1</span>`;
+  if (!window.THREE){
+    const st = $('#status'); st.textContent = "The 3D view couldn't load. Check your connection and open the Cube tab again."; st.className = 'status';
+    return;
+  }
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({antialias:true, alpha:true}); }
+  catch(e){ const st = $('#status'); st.textContent = "This device can't show 3D graphics, so the cube demo isn't available here."; return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.domElement.className = 'cube-canvas';
+  board.appendChild(renderer.domElement); board.appendChild(hint); board.appendChild(legend);
+  const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x5a6478, 0.85));
+  const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(6, 12, 9); scene.add(sun);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.25); fill.position.set(-8, 4, -3); scene.add(fill);
+
+  const col = cubeColors(), gap = 0.05, Lx = LX;
+  const BALL_R = 0.47;   // the unit ball's radius
+  const geo = {
+    x3: roundedBox(Lx - gap, Lx - gap, Lx - gap, BALL_R),
+    x2: roundedBox(Lx - gap, Lx - gap, 1 - gap, BALL_R),
+    x:  roundedBox(Lx - gap, 1 - gap, 1 - gap, BALL_R),
+    one: new THREE.SphereGeometry(0.47, 28, 18)
+  };
+  const edgeGeo = {};   // rounded pieces don't need outline edges
+  const mat = (hex) => new THREE.MeshStandardMaterial({color:new THREE.Color(hex), roughness:.5, metalness:.04});
+  const mats = { x3:mat(col.x3), x2:mat(col.x2), x:mat(col.x), one:mat(col.one), neg:mat(col.neg) };
+  const edgeMat = new THREE.LineBasicMaterial({color:0x000000, transparent:true, opacity:.28});
+
+  const meshes = {};
+  for (const id in demo.pieces){
+    const {t, s} = demo.pieces[id];
+    const m = new THREE.Mesh(geo[t], s < 0 ? mats.neg : mats[t]);
+    if (edgeGeo[t]) m.add(new THREE.LineSegments(edgeGeo[t], edgeMat));
+    // a soft glow around the piece, used to point out pieces left over at the end
+    const halo = new THREE.Mesh(geo[t], new THREE.MeshBasicMaterial({ color: new THREE.Color(col.accent), transparent:true, opacity:.35, depthWrite:false }));
+    halo.scale.setScalar(1.3); halo.visible = false; m.add(halo);
+    scene.add(m); meshes[id] = {m, halo, from:null, to:null};
+  }
+  // guides: dashed-look edge gaps, corner, finished cube
+  const h = demo.h, S = demo.S, acc = new THREE.LineBasicMaterial({color:new THREE.Color(col.accent)});
+  const guide = (sx, sy, sz, cx, cy, cz) => { const l = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(sx, sy, sz)), acc); l.position.set(cx, cy, cz); return l; };
+  const edges = new THREE.Group();
+  edges.add(guide(h, h, Lx, Lx + h/2, Lx + h/2, Lx/2), guide(Lx, h, h, Lx/2, Lx + h/2, Lx + h/2), guide(h, Lx, h, Lx + h/2, Lx/2, Lx + h/2));
+  const corner = guide(h, h, h, Lx + h/2, Lx + h/2, Lx + h/2);
+  const full = guide(S + .08, S + .08, S + .08, S/2, S/2, S/2);
+  [edges, corner, full].forEach(g => { g.visible = false; scene.add(g); });
+  // 8 blocks of the finished cube: each edge drawn as a thin bar, purple when it is x long, orange when it is h long
+  const E = 0.7, T3 = 0.09, blocks = [];
+  const labelBox = document.createElement('div'); labelBox.className = 'cube-labels';
+  for (let bits = 0; bits < 8; bits++){
+    const a = [bits & 1, (bits >> 1) & 1, (bits >> 2) & 1];          // 1 = this axis uses the h part
+    const d = a.map(v => v ? h : Lx), lo3 = a.map(v => v ? Lx + E : 0);
+    const c3 = lo3.map((v, k) => v + d[k]/2);
+    const grp = new THREE.Group(); grp.position.set(...c3);
+    const mats = [0, 1].map(v => new THREE.MeshBasicMaterial({ color: new THREE.Color(v ? col.hlC : col.hlA), transparent:true }));
+    for (let ax = 0; ax < 3; ax++){
+      const len = d[ax] + T3, size = [T3, T3, T3]; size[ax] = len;
+      const g3 = new THREE.BoxGeometry(...size), o1 = (ax + 1) % 3, o2 = (ax + 2) % 3;
+      for (const s1 of [-1, 1]) for (const s2 of [-1, 1]){
+        const bar = new THREE.Mesh(g3, mats[a[ax]]), pos = [0, 0, 0];
+        pos[o1] = s1 * d[o1]/2; pos[o2] = s2 * d[o2]/2;
+        bar.position.set(...pos); grp.add(bar);
+      }
+    }
+    grp.visible = false; scene.add(grp);
+    const n = a[0] + a[1] + a[2];
+    const lab = document.createElement('div'); lab.className = 'cube-label';
+    lab.innerHTML = n === 0 ? X3 : n === 1 ? `${coef(h)}${X2}` : n === 2 ? `${coef(h*h)}${X}` : `${h*h*h}`;
+    labelBox.appendChild(lab);
+    blocks.push({ grp, mats, n, bits, lab, c: new THREE.Vector3(...c3) });
+  }
+  // the three outside edges of the reassembled cube, split into an x part (purple) and an h part (orange)
+  const dims = new THREE.Group(), O = 0.4, TB = 0.13, dimLabs = [];
+  const segMat = [new THREE.MeshBasicMaterial({ color: new THREE.Color(col.hlA) }), new THREE.MeshBasicMaterial({ color: new THREE.Color(col.hlC) })];
+  const edgesDef = [ { ax:0, at:[0, 0, S + O], lab:[S/2, -0.2, S + O + 0.7] },      // along the front bottom
+                     { ax:1, at:[-O, 0, S + O], lab:[-O - 0.7, S/2, S + O + 0.3] },  // up the front left
+                     { ax:2, at:[-O, 0, 0], lab:[-O - 0.7, -0.2, S/2] } ];          // along the left bottom
+  for (const e of edgesDef){
+    [[0, Lx, 0], [Lx, S, 1]].forEach(([a0, a1, m]) => {
+      const size = [TB, TB, TB]; size[e.ax] = a1 - a0 - 0.06;
+      const bar = new THREE.Mesh(new THREE.BoxGeometry(...size), segMat[m]), pos = [...e.at];
+      pos[e.ax] = (a0 + a1)/2; bar.position.set(...pos); dims.add(bar);
+    });
+    const lab = document.createElement('div'); lab.className = 'cube-label dim';
+    lab.innerHTML = `${cx()} + ${cn(h)}`; labelBox.appendChild(lab);
+    dimLabs.push({ lab, c: new THREE.Vector3(...e.lab) });
+  }
+  dims.visible = false; scene.add(dims);
+  board.appendChild(labelBox);
+  const {lo, hi} = demo.bounds;
+  const span = Math.ceil(Math.max(hi[0] - lo[0], hi[2] - lo[2]) + 4);
+  const grid = new THREE.GridHelper(span, span, new THREE.Color(col.grid), new THREE.Color(col.grid));
+  grid.position.set((lo[0] + hi[0])/2, 0, (lo[2] + hi[2])/2);
+  scene.add(grid);
+
+  C = { renderer, scene, camera, meshes, guides:{edges, corner, full}, blocks, labelBox, dims, dimLabs, partsTimer:0, hint, legend, az:-0.62, el:0.5, dirty:true, anim:null, raf:0,
+        center: new THREE.Vector3((lo[0] + hi[0])/2, (hi[1])/3, (lo[2] + hi[2])/2), radius: 0 };
+  C.radius = 0.5*Math.hypot(hi[0] - lo[0], hi[1], hi[2] - lo[2]);
+
+  // drag to orbit
+  let dragAt = null;
+  const cv = renderer.domElement;
+  cv.addEventListener('pointerdown', e => { dragAt = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); C.hint.hidden = true; });
+  cv.addEventListener('pointermove', e => {
+    if (!dragAt) return;
+    C.az -= (e.clientX - dragAt[0]) * 0.008;
+    C.el = Math.max(0.08, Math.min(1.35, C.el + (e.clientY - dragAt[1]) * 0.006));
+    dragAt = [e.clientX, e.clientY]; placeCamera(); C.dirty = true;
+  });
+  const up = () => { dragAt = null; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+
+  fitCube();
+  cubeShow(demo.step = 0, true);
+  const loop = now => {
+    C.raf = requestAnimationFrame(loop);
+    if (C.anim){
+      const k = Math.min(1, (now - C.anim.t0) / C.anim.dur);
+      for (const id in C.meshes) tweenPiece(C.meshes[id], k);
+      if (k >= 1) C.anim = null;
+      C.dirty = true;
+    }
+    if (C.dirty){ C.renderer.render(C.scene, C.camera); placeCubeLabels(); C.dirty = false; }
+  };
+  C.raf = requestAnimationFrame(loop);
+}
+function placeCamera(){
+  const fovV = C.camera.fov * Math.PI/180, fovH = 2*Math.atan(Math.tan(fovV/2)*C.camera.aspect);
+  const dist = C.radius / Math.sin(Math.min(fovV, fovH)/2) * 1.02;
+  const c = C.center;
+  C.camera.position.set(c.x + dist*Math.cos(C.el)*Math.sin(C.az), c.y + dist*Math.sin(C.el), c.z + dist*Math.cos(C.el)*Math.cos(C.az));
+  C.camera.lookAt(c);
+}
+function fitCube(){
+  if (!C) return;
+  const w = board.clientWidth, h = board.clientHeight;
+  C.renderer.setSize(w, h, false);
+  C.camera.aspect = w / Math.max(1, h); C.camera.updateProjectionMatrix();
+  placeCamera(); C.dirty = true;
+}
+function pieceTarget(p){
+  const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(p.r[0], p.r[1], p.r[2]));
+  return { pos: new THREE.Vector3(...p.p), q, sc: p.show ? 1 : 0.001, zap: !!p.zap };
+}
+const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
+function tweenPiece(o, k){
+  const {m, from, to} = o;
+  // a cancelling pair moves first, then shrinks away
+  const e = to.zap ? ease(Math.min(1, k / .62)) : ease(k);
+  const es = to.zap ? ease(Math.max(0, (k - .7) / .3)) : e;
+  m.position.lerpVectors(from.pos, to.pos, e);
+  m.quaternion.copy(from.q).slerp(to.q, e);
+  const sc = from.sc + (to.sc - from.sc)*es; m.scale.setScalar(sc);
+  m.visible = sc > 0.01;
+}
+function cubeShow(i, instant){
+  if (!C) return;
+  const step = demo.steps[i];
+  for (const id in C.meshes){
+    const o = C.meshes[id], m = o.m;
+    o.from = { pos: m.position.clone(), q: m.quaternion.clone(), sc: m.scale.x };
+    o.to = pieceTarget(step.st[id]);
+    if (instant || reduce){ o.from = o.to; tweenPiece(o, 1); }
+  }
+  const zapping = Object.values(step.st).some(p => p.zap) && !Object.values(demo.steps[Math.max(0, i - 1)].st).some(p => p.zap);
+  C.anim = instant || reduce ? null : { t0: performance.now(), dur: zapping ? 1500 : 900 };
+  C.guides.edges.visible = step.box === 'edges';
+  C.guides.corner.visible = step.box === 'corner';
+  C.guides.full.visible = step.box === 'full';
+  // block-by-block highlight: wait for the cube to finish pulling apart before showing frames
+  clearTimeout(C.partsTimer);
+  const bm = /^c3b(\d)$/.exec(step.box || '');
+  const part = bm ? +bm[1] : step.box === 'c3partsAll' ? 'all' : null;
+  const wasApart = false;   // each step moves one block, so its frame always waits for the move
+  clearTimeout(C.partsTimer);
+  // frames for the blocks pulled out so far: the current one bright (once it has finished moving), earlier ones faded
+  const applyParts = (showCur = true) => {
+    for (const b of C.blocks){
+      const idx = CUBE_SEQ.indexOf(b.bits);
+      const isCur = part !== 'all' && idx === part;
+      const on = part !== null && (part === 'all' || idx <= part) && (showCur || !isCur);
+      const bright = part === 'all' || isCur;
+      b.grp.visible = on;
+      b.mats.forEach(m => { m.opacity = bright ? 1 : 0.3; });
+      b.lab.classList.toggle('show', on);
+      b.lab.classList.toggle('cur', on && isCur);
+      b.lab.classList.toggle('past', on && !bright);
+    }
+    C.dirty = true;
+  };
+  for (const id in C.meshes) C.meshes[id].halo.visible = (step.hl || []).includes(id);
+  const whole = step.box === 'c3whole' || step.box === 'c3left';
+  C.dims.visible = false; C.dimLabs.forEach(d => d.lab.classList.remove('show'));
+  if (whole){
+    const showDims = () => { C.dims.visible = true; C.dimLabs.forEach(d => d.lab.classList.add('show')); C.dirty = true; };
+    if (instant || reduce) showDims(); else C.partsTimer = setTimeout(showDims, 950);
+  }
+  if (typeof part === 'number' && part > 0 && !instant && !reduce){ applyParts(false); C.partsTimer = setTimeout(() => applyParts(true), 950); }
+  else applyParts();
+  C.dirty = true;
+}
+function placeCubeLabels(){
+  if (!C?.blocks) return;
+  const w = board.clientWidth, hgt = board.clientHeight;
+  for (const b of [...C.blocks, ...C.dimLabs]){
+    if (!b.lab.classList.contains('show')) continue;
+    const v = b.c.clone().project(C.camera);
+    b.lab.style.transform = `translate(${(v.x + 1)/2*w}px, ${(1 - v.y)/2*hgt}px) translate(-50%, -50%)`;
+  }
+}
+function cubeDispose(){
+  if (!C) return;
+  cancelAnimationFrame(C.raf);
+  C.scene.traverse(o => { o.geometry?.dispose?.(); });
+  C.renderer.dispose();
+  clearTimeout(C.partsTimer);
+  C.renderer.domElement.remove(); C.hint.remove(); C.legend.remove(); C.labelBox?.remove();
+  C = null;
+}
+
+
+/* ---------- step-by-step equation solver ---------- */
+// Works out the next move from whatever is on the board, then does it with the real tiles.
+const solver = { on:false, step:0, start:0, move:null, timer:null, running:false };
+const nOf = (n, t) => `${n} × ${t}`;
+const sideWord = s => s === 'L' ? 'left' : 'right';
+function addBoth(t, s, n){
+  pushHistory();
+  for (const side of ['L','R']) for (let i = 0; i < n; i++){ const p = freeSpot(side, t); newBall(t, s, side, p.x, p.y); }
+  render();
+}
+function nextMove(){
+  if (solver.engine === 'csq' || solver.engine === 'simp') return csq.steps[solver.step] || csq.final;
+  if (pairCount()) return { text:'Cancel the zero pairs. Each pair adds up to 0, so taking them away changes nothing.', run: cancelAll };
+  const pL = poly('L'), pR = poly('R');
+  if (pL.x2 && pL.x2 === pR.x2){
+    const n = pL.x2, s2 = n > 0 ? -1 : 1;
+    return { text:`x² is on both sides. Add ${nOf(Math.abs(n), s2 < 0 ? '−x²' : '+x²')} to both sides so the x² tiles cancel.`, run: () => addBoth('x2', s2, Math.abs(n)) };
+  }
+  if (pL.x2 || pR.x2) return { end:true, text:'This equation has x² tiles that don\'t cancel, so it is a quadratic equation. The step-by-step solver only handles equations with x and units.' };
+  if (pL.x && pR.x){
+    const side = Math.abs(pL.x) <= Math.abs(pR.x) ? 'L' : 'R', n = (side === 'L' ? pL : pR).x, s = n > 0 ? -1 : 1;
+    return { text:`x is on both sides. Add ${nOf(Math.abs(n), s < 0 ? '−x' : '+x')} to both sides to clear x from the ${sideWord(side)} side.`,
+             run: () => addBoth('x', s, Math.abs(n)) };
+  }
+  if (!pL.x && !pR.x){
+    return pL.one === pR.one
+      ? { end:true, good:true, text:`No x tiles are left and both sides match (${pL.one} = ${pR.one}). Every value of x works.` }
+      : { end:true, text:`No x tiles are left and the sides don't match (${pL.one} ≠ ${pR.one}). There's no solution.` };
+  }
+  const xs = pL.x ? 'L' : 'R', px = xs === 'L' ? pL : pR, pu = xs === 'L' ? pR : pL;
+  if (px.one){
+    const m = Math.abs(px.one), s = px.one > 0 ? -1 : 1;
+    return { text:`Clear the units from the x side. Add ${nOf(m, s < 0 ? '−1' : '+1')} to both sides.`, run: () => addBoth('one', s, m) };
+  }
+  const n = px.x, c = pu.one;
+  if (n < 0) return { text:`The x side is negative. Flip every tile on both sides. That's the same as multiplying both sides by −1.`, run: flipAll };
+  if (n > 1){
+    if (Number.isInteger(c) && c % n === 0) return { text:`There are ${n} x tiles. Share both sides into ${n} equal groups and keep one group: that's what one x is worth.`, run: divide };
+    const m = Math.abs(c), q = Math.floor(m / n), r = m - q*n;
+    return { text:`There are ${n} x tiles, but ${m} ball${m > 1 ? 's' : ''} won't share evenly into ${n} groups. `
+      + (q ? `Each group gets ${q} whole ball${q > 1 ? 's' : ''}. ` : '')
+      + `The ${r} leftover ball${r > 1 ? 's are' : ' is'} cut into ${n} slices${r > 1 ? ' each' : ''}, and every group gets ${r} slice${r > 1 ? 's' : ''}`
+      + (gcd(r, n) > 1 ? `, which is ${rat(r/n).mixed} of a ball.` : '.'), run: divide };
+  }
+  const ans = rat(c);
+  return { end:true, good:true, text:`Solved! One x tile balances ${ans.mixed}, so x = ${ans.mixed}${ans.isFrac && ans.hasWhole ? `, which is ${ans.improper}` : ''}.` };
+}
+function solverUI(){
+  const m = solver.move = nextMove();
+  const tag = $('#solveTag');
+  tag.textContent = m.end ? (m.good ? 'Done' : 'Stuck') : `Step ${solver.step + 1}`;
+  tag.className = 'solver-tag' + (m.end && m.good ? ' done' : '');
+  $('#solveText').textContent = m.text;
+  $('#solveNext').disabled = !!m.end || solver.running;
+  $('#solvePlay').disabled = (!!m.end && !solver.timer);
+  $('#solvePlay').querySelector('span').textContent = solver.timer ? 'Pause' : 'Play all';
+  $('#solveRestart').disabled = solver.running || history.length <= solver.start;
+}
+async function solverStep(){
+  if (!solver.on || solver.running || busy) return;
+  const m = solver.move || nextMove();
+  if (m.end) return;
+  solver.running = true; solverUI();
+  await m.run();
+  await wait(120);
+  solver.running = false; solver.step++;
+  if (solver.on) solverUI();
+}
+function openSolver(){
+  closeSuggest();
+  if (mode !== 'eq' || !balls.length) return;
+  solver.engine = 'eq';
+  solver.on = true; solver.step = 0; solver.start = history.length;
+  $('#solver').hidden = false; $('#tray').hidden = true; $('#actions').hidden = true;
+  updateUI(); solverUI();
+}
+function stopSolvePlay(){ clearTimeout(solver.timer); solver.timer = null; if (solver.on) solverUI(); }
+function closeSolver(){
+  if (!solver.on) return;
+  stopSolvePlay(); solver.on = false;
+  csqClear();
+  $('#solver').hidden = true;
+  if (!demo.on){ $('#tray').hidden = false; $('#actions').hidden = false; }
+  updateUI();
+}
+async function solvePlayLoop(){
+  if (!solver.timer) return;
+  await solverStep();
+  if (!solver.on || !solver.timer) return;
+  if (solver.move.end){ stopSolvePlay(); return; }
+  solver.timer = setTimeout(solvePlayLoop, reduce ? 1200 : 1500);
+}
+$('#solveBtn').onclick = openSolver;
+$('#solveClose').onclick = closeSolver;
+$('#solveNext').onclick = () => { stopSolvePlay(); solverStep(); };
+$('#solvePlay').onclick = () => {
+  if (solver.timer){ stopSolvePlay(); return; }
+  solver.timer = setTimeout(solvePlayLoop, 0); solverUI();
+};
+$('#solveRestart').onclick = () => {
+  if (solver.running || busy) return;
+  stopSolvePlay();
+  if (history.length > solver.start){
+    const d = JSON.parse(history[solver.start]);
+    history.length = solver.start;
+    balls = d.balls; mode = d.mode;
+  }
+  if (solver.engine === 'csq' || solver.engine === 'simp') csqClear();
+  if (solver.engine === 'simp') csq.result = csq.start || null;
+  solver.step = 0; render(); solverUI();
+};
+
+/* ---------- suggested approach: look at what's on the board and recommend a way in ---------- */
+const sug = { on:false };
+const isSq = n => n >= 0 && Number.isInteger(Math.sqrt(n));
+// integer m, n with m + n = b and m × n = c, so x² + bx + c = (x + m)(x + n)
+function intFactors(b, c){ for (let m = -Math.abs(c) - Math.abs(b) - 1; m <= Math.abs(c) + Math.abs(b) + 1; m++) if (m*(b - m) === c && m <= b - m) return [m, b - m]; return null; }
+const bracket = m => m === 0 ? `${'x'}` : `(x ${m > 0 ? '+' : '−'} ${Math.abs(m)})`;
+function advise(){
+  const actions = [];
+  const go = (label, fn, primary = false) => actions.push({ label, fn, primary });
+  if (mode === 'eq'){
+    const pL = poly('L'), pR = poly('R'), a = pL.x2 - pR.x2, b = pL.x - pR.x;
+    if (pL.x2 || pR.x2){
+      if (!a){
+        go('Solve step by step', openSolver, true);
+        return { text:'The x² tiles are the same on both sides, so they cancel and leave a linear equation. Add the opposite x² tile to both sides, cancel the pairs, then solve as usual.', actions };
+      }
+      go('Try x =', openTry, true);
+      return { text:'This is a quadratic equation: it still has x² after collecting the terms. Solving it needs square roots, which the tiles can\'t show. On paper: move everything to one side, then factorise or complete the square.',
+        more:'Use Try x = to test your answers: a solution makes both sides balance.', actions };
+    }
+    if (!b){
+      go('Try x =', openTry, true);
+      return { text: pL.one === pR.one ? 'The x tiles cancel and both sides match, so every value of x works.' : 'The x tiles cancel and the sides don\'t match, so no value of x works.', actions };
+    }
+    go('Solve step by step', openSolver, true); go('Try x =', openTry);
+    const steps = [];
+    if (pairCount()) steps.push('cancel the zero pairs');
+    if (pL.x && pR.x) steps.push('clear x from one side by adding its opposite to both sides');
+    steps.push('clear the units from the x side', 'share both sides into equal groups');
+    return { text:`This is a linear equation. Keep it balanced and work towards one x tile on its own: ${steps.join(', then ')}.`, more:'When you have an answer, check it with Try x =.', actions };
+  }
+  // Expression mode
+  const p = poly(null);
+  if (pairCount()){ go('Simplify step by step', openSimp, true); return { text:'Start by simplifying: collect like tiles together, then cancel the zero pairs one kind at a time. Then tap Suggest again for the next step.', actions }; }
+  if (p.x2 === 0){
+    go('Try x =', openTry, true);
+    if (!p.x) return { text:'There are no x tiles left, so this is just a number.', actions };
+    const g = gcd(p.x, p.one);
+    return { text:'This is already as simple as it gets: one group of x tiles and one group of units.' + (p.one && g > 1 ? ` You could also take out the common factor ${g}: ${txt(fmt(p))} = ${g}(${txt(fmt({x2:0, x:p.x/g, one:p.one/g}))}).` : ''),
+      more:'Use Try x = to see what it is worth for different values of x.', actions };
+  }
+  if (p.x2 !== 1){
+    const g = gcd(gcd(p.x2, p.x), p.one);
+    go('Try x =', openTry, true);
+    return { text: p.x2 < 0 ? 'The x² tile is negative. Take out a factor of −1 first, then work with what is left on paper.'
+      : g > 1 ? `Every term shares the factor ${g}: ${txt(fmt(p))} = ${g}(${txt(fmt({x2:p.x2/g, x:p.x/g, one:p.one/g}))}). Take that out first, then work on the bracket.`
+      : `There are ${p.x2} x² tiles. Completing the square needs one, so on paper take out ${p.x2} from the x² and x terms first.`, actions };
+  }
+  // one x² tile
+  const b = p.x, c = p.one;
+  if (!b && !c){ go('Try x =', openTry, true); return { text:'Just one x² tile: it is already a square, x × x.', actions }; }
+  if (!b && c < 0 && isSq(-c) && Math.sqrt(-c) <= 6){
+    const a = Math.sqrt(-c), i = BINOMS.findIndex(e => !e.gcf && e.a === a);
+    go('Watch it in Factorise', () => { closeSuggest(); enterDemo('factor'); if (demo.ex !== i){ demo.ex = i; drawDemo(); } }, true);
+    return { text:`This is a difference of two squares, x² − ${-c}. Add ${a} zero pair${a > 1 ? 's' : ''} of x tiles and it makes a rectangle: x² − ${-c} = (x + ${a})(x − ${a}).`, actions };
+  }
+  if (!c){
+    const i = BINOMS.findIndex(e => e.gcf && e.a === Math.abs(b) && Math.sign(e.gcf) === Math.sign(b));
+    if (i >= 0) go('Watch it in Factorise', () => { closeSuggest(); enterDemo('factor'); if (demo.ex !== i){ demo.ex = i; drawDemo(); } }, true);
+    if (b % 2 === 0) go('Complete the square', openCsq);
+    return { text:`Every tile has a side of length x, so x is a common factor: stand the x tiles beside the x² tile to make one rectangle. ${txt(fmt(p))} = x(x ${b > 0 ? '+' : '−'} ${Math.abs(b)}).`, actions };
+  }
+  const f = intFactors(b, c), fText = f ? `${bracket(f[0])}${bracket(f[1])}`.replace('(x + 0)', 'x') : '';
+  if (b % 2 === 0){
+    go('Complete the square', openCsq, true);
+    const r = c - (b/2)*(b/2);
+    return { text:`Complete the square: split the ${Math.abs(b)} ${b > 0 ? '' : '−'}x tiles into two groups of ${Math.abs(b)/2} around the x² tile and fill the corner. It gives (x ${b > 0 ? '+' : '−'} ${Math.abs(b)/2})²${r > 0 ? ` + ${r}` : r < 0 ? ` − ${-r}` : ''}.`,
+      more: f ? (r === 0 ? `It's a perfect square, so it also factorises as ${fText}.` : `It also factorises into a rectangle: ${txt(fmt(p))} = ${fText}. Try arranging all the tiles into one rectangle with sides x ${f[0] >= 0 ? '+' : '−'} ${Math.abs(f[0])} and x ${f[1] >= 0 ? '+' : '−'} ${Math.abs(f[1])}.`) : null, actions };
+  }
+  go('Try x =', openTry, !f);
+  return { text: f ? `It factorises into a rectangle: ${txt(fmt(p))} = ${fText}. Arrange all the tiles into one rectangle with sides x ${f[0] >= 0 ? '+' : '−'} ${Math.abs(f[0])} and x ${f[1] >= 0 ? '+' : '−'} ${Math.abs(f[1])}.`
+      : `There are ${Math.abs(b)} x tiles, an odd number, so they can't be split evenly to complete the square, and it doesn't factorise with whole numbers.`,
+    more: `On paper you can still complete the square with half tiles: ${txt(fmt(p))} = (x ${b > 0 ? '+' : '−'} ${Math.abs(b)}/2)² ${(4*c - b*b) >= 0 ? '+' : '−'} ${rat(Math.abs(4*c - b*b)/4).improper}.`, actions };
+}
+function openSuggest(){
+  if (!balls.length || demo.on) return;
+  const a = advise();
+  sug.on = true; sug.actions = a.actions;
+  $('#sugText').textContent = a.text;
+  $('#sugMore').hidden = !a.more; $('#sugMore').textContent = a.more || '';
+  $('#sugBtns').innerHTML = a.actions.map((x, i) => `<button class="act${x.primary ? ' primary' : ''}" data-i="${i}">${x.label}</button>`).join('');
+  $('#sugPanel').hidden = false; $('#tray').hidden = true;
+}
+function closeSuggest(){ if (!sug.on) return; sug.on = false; $('#sugPanel').hidden = true; if (!demo.on && !solver.on && !tryx.on && !chal.on) $('#tray').hidden = false; }
+$('#sugBtns').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const act = sug.actions[+b.dataset.i];
+  closeSuggest(); act.fn();
+});
+$('#sugClose').onclick = closeSuggest;
+$('#sugBtn').onclick = () => sug.on ? closeSuggest() : openSuggest();
+
+/* ---------- try a value for x: every tile turns into the balls it is worth ---------- */
+const tryx = { on:false, v:2, ov:null };
+const num = n => n < 0 ? '−' + (-n) : String(n);
+// "x² + 3x + 2" with x = v  →  ["3² + 3 × 3 + 2", "9 + 9 + 2", 20]
+function substitute(p, v){
+  const vs = v < 0 ? `(${num(v)})` : `${v}`, parts = [], vals = [];
+  const add = (coef, body, val) => { if (!coef) return; parts.push([coef < 0, (Math.abs(coef) === 1 ? '' : Math.abs(coef) + ' × ') + body]); vals.push(val); };
+  add(p.x2, `${vs}²`, p.x2*v*v); add(p.x, vs, p.x*v);
+  if (p.one) { parts.push([p.one < 0, rat(Math.abs(p.one)).mixed]); vals.push(p.one); }
+  const join = list => list.map(([neg, t], i) => (i ? (neg ? ' − ' : ' + ') : (neg ? '−' : '')) + t).join('') || '0';
+  const total = vals.reduce((a, b) => a + b, 0);
+  return [join(parts), join(vals.map(x => [x < 0, rat(Math.abs(x)).mixed])), total];
+}
+function tryItems(side){
+  const v = tryx.v, items = [];
+  const grid = (cols, rows, cls, border, label) => {
+    const n = cols*rows;
+    return `<div class="titem"><div class="tgrid${n ? '' : ' zero'}" style="--fc:${border};grid-template-columns:repeat(${Math.max(cols, 1)}, 13px)">${`<span class="tball ${cls}"></span>`.repeat(n)}</div><small>${label}</small></div>`;
+  };
+  for (const b of balls.filter(t => (side == null || t.side === side) && t.t === 'x2').sort((a, z) => z.s - a.s))
+    items.push(grid(Math.abs(v), Math.abs(v), b.s > 0 ? 'p' : 'n', 'var(--b-x2)', `${b.s < 0 ? '−' : ''}x² = ${num(b.s*v*v)}`));
+  for (const b of balls.filter(t => (side == null || t.side === side) && t.t === 'x').sort((a, z) => z.s - a.s))
+    items.push(grid(Math.abs(v), 1, b.s*v > 0 ? 'p' : 'n', 'var(--b-x)', `${b.s < 0 ? '−' : ''}x = ${num(b.s*v)}`));
+  const ones = balls.filter(t => (side == null || t.side === side) && t.t === 'one');
+  const pos = ones.filter(t => t.s > 0).length, neg = ones.filter(t => t.s < 0).length;
+  if (pos) items.push(`<div class="titem"><div class="titems" style="gap:2px;max-width:${6*15}px">${'<span class="tball p"></span>'.repeat(pos)}</div><small>${pos} one${pos > 1 ? 's' : ''}</small></div>`);
+  if (neg) items.push(`<div class="titem"><div class="titems" style="gap:2px;max-width:${6*15}px">${'<span class="tball n"></span>'.repeat(neg)}</div><small>${neg} × −1</small></div>`);
+  return items.join('') || '<small>nothing</small>';
+}
+function renderTry(){
+  if (!tryx.on) return;
+  const v = tryx.v; $('#tryV').textContent = num(v);
+  $('#tryDown').disabled = v <= -6; $('#tryUp').disabled = v >= 6;
+  if (!tryx.ov){ tryx.ov = document.createElement('div'); tryx.ov.className = 'tryov'; board.appendChild(tryx.ov); }
+  const ov = tryx.ov, t = $('#tryText');
+  ov.classList.toggle('wide', mode === 'eq' && board.clientWidth >= 560);
+  if (mode === 'expr'){
+    const p = poly(null), [sub, vals, total] = substitute(p, v);
+    ov.innerHTML = `<div class="tside"><h3>Value<b>${rat(total).mixed}</b></h3><div class="titems">${tryItems(null)}</div></div>`;
+    t.textContent = `When x = ${num(v)}: ${txt(fmt(p))} = ${sub} = ${vals}${vals.includes('+') || vals.includes(' − ') ? ` = ${rat(total).mixed}` : ''}. Count the balls: yellow ones add, red ones take away.`;
+  } else {
+    const pL = poly('L'), pR = poly('R'), [sL, vL, tL] = substitute(pL, v), [sR, vR, tR] = substitute(pR, v), same = Math.abs(tL - tR) < 1e-9;
+    ov.innerHTML = `<div class="tside"><h3>Left side<b>${rat(tL).mixed}</b></h3><div class="titems">${tryItems('L')}</div></div>
+      <div class="teq ${same ? 'ok' : 'no'}">${same ? '=' : '≠'}</div>
+      <div class="tside"><h3>Right side<b>${rat(tR).mixed}</b></h3><div class="titems">${tryItems('R')}</div></div>`;
+    const show = (e, sub, vals, tot) => `${txt(e)} = ${sub}${vals !== sub ? ` = ${vals}` : ''}${/[+−] /.test(vals) ? ` = ${rat(tot).mixed}` : ''}`;
+    t.textContent = `When x = ${num(v)}: left ${show(fmt(pL), sL, vL, tL)}; right ${show(fmt(pR), sR, vR, tR)}. `
+      + (same ? `Both sides are ${rat(tL).mixed}, so x = ${num(v)} is a solution.`
+              : `${rat(tL).mixed} ≠ ${rat(tR).mixed}, so x = ${num(v)} isn't a solution: the left side is ${rat(Math.abs(tL - tR)).mixed} ${tL > tR ? 'more' : 'less'}.`);
+  }
+}
+function openTry(){
+  closeSuggest();
+  if (busy) return;
+  closeSolver(); closeChallenge();
+  tryx.on = true;
+  $('#tryPanel').hidden = false; $('#tray').hidden = true; $('#actions').hidden = true;
+  renderTry(); updateUI();
+}
+function closeTry(){
+  if (!tryx.on) return;
+  tryx.on = false; tryx.ov?.remove(); tryx.ov = null;
+  $('#tryPanel').hidden = true;
+  if (!demo.on){ $('#tray').hidden = false; $('#actions').hidden = false; }
+  updateUI();
+}
+$('#tryBtn').onclick = openTry;
+$('#tryClose').onclick = closeTry;
+$('#tryDown').onclick = () => { tryx.v = Math.max(-6, tryx.v - 1); renderTry(); };
+$('#tryUp').onclick = () => { tryx.v = Math.min(6, tryx.v + 1); renderTry(); };
+
+/* ---------- Expression mode: complete the square with the tiles on the board ---------- */
+const csq = { steps: [], result: null, final: null, ov: null };
+function csqCheck(){
+  const p = poly(null);
+  if (balls.some(b => b.f)) return 'Remove the fraction balls first.';
+  if (p.x2 !== 1) return p.x2 > 1 ? `Completing the square needs exactly one x² tile. With ${p.x2}, take out a common factor first.`
+    : p.x2 < 1 && balls.some(b => b.t === 'x2' && b.s < 0) ? 'Completing the square needs a positive x² tile. With −x², take out a factor of −1 first.' : 'Add an x² tile first.';
+  if (!p.x) return 'There are no x tiles, so the x² tile is already a square on its own.';
+  if (p.x % 2) return `${Math.abs(p.x)} x tiles can't be split into two equal groups without cutting one in half. On paper: x² ${p.x > 0 ? '+' : '−'} ${Math.abs(p.x)}x = (x ${p.x > 0 ? '+' : '−'} ${Math.abs(p.x)}/2)² − ${p.x*p.x}/4.`;
+  const h = Math.abs(p.x)/2, S = L + h*U;
+  if (34 + S + 40 + 2*U + 16 > board.clientWidth || 34 + S + 16 > board.clientHeight) return 'That square is too big for this screen. Try fewer x tiles.';
+  return null;
+}
+function csqClear(){ csq.ov?.remove(); csq.ov = null; csq.result = null; }
+function openCsq(){
+  closeSuggest();
+  if (mode !== 'expr' || busy) return;
+  const why = csqCheck();
+  if (why){ csq.steps = []; csq.final = { end:true, text: why }; csq.result = null; startCsqPanel(); return; }
+  const p = poly(null), b = p.x, c = p.one, h = Math.abs(b)/2, sx = Math.sign(b), need = h*h;
+  const k = need - Math.max(c, 0), r = c - need, sg = sx > 0 ? '+' : '−';
+  const e0 = fmt(p), fin = `(${X} ${sg} ${h})<sup>2</sup>${r > 0 ? ` + ${r}` : r < 0 ? ` − ${-r}` : ''}`;
+  const O = { x: 34, y: 34 }, S = L + h*U, x0 = O.x + S + 40, xt = sx > 0 ? 'x' : '−x';
+  const maxRows = Math.max(1, Math.floor((board.clientHeight - O.y - 10)/U));
+  const corner = i => ({ x: O.x + L + (i % h)*U + U/2, y: O.y + L + Math.floor(i/h)*U + U/2 });
+  const outPos = i => ({ x: x0 + Math.floor(i/maxRows)*(2*U + 12) + U/2, y: O.y + (i % maxRows)*U + U/2 });          // positive balls waiting outside
+  const negPos = i => ({ x: x0 + Math.floor(i/maxRows)*(2*U + 12) + U + 6 + U/2, y: O.y + (i % maxRows)*U + U/2 }); // negative balls, one column over
+  const byId = (a, z) => a.id - z.id;
+  const xs = () => balls.filter(t => t.t === 'x').sort(byId);
+  const ones = sgn => balls.filter(t => t.t === 'one' && t.s === sgn).sort(byId);
+  const placeA = () => {
+    const sq = balls.find(t => t.t === 'x2'); sq.rot = false; sq.x = O.x + L/2; sq.y = O.y + L/2;
+    xs().slice(0, h).forEach((t, i) => { t.rot = false; t.x = O.x + L/2; t.y = O.y + L + i*U + U/2; });
+  };
+  const placeB = () => xs().slice(h).forEach((t, i) => { t.rot = true; t.x = O.x + L + i*U + U/2; t.y = O.y + L/2; });
+  const ov = html => { if (!csq.ov){ csq.ov = document.createElement('div'); csq.ov.className = 'csq-ov'; board.appendChild(csq.ov); } csq.ov.innerHTML = html; requestAnimationFrame(() => csq.ov?.querySelectorAll('.d-box').forEach(e => e.classList.add('show'))); };
+  const cornerBox = `<div class="d-box d-corner" style="left:${O.x + L}px;top:${O.y + L}px;width:${h*U}px;height:${h*U}px">${h}×${h}</div>`;
+  const dims = `<div class="d-box d-full" style="left:${O.x}px;top:${O.y}px;width:${S}px;height:${S}px"></div>
+    <div class="d-box d-dim" style="left:${O.x}px;top:${O.y - 28}px;width:${L}px;height:20px;--dc:var(--hl-a)"><span>${X}</span></div>
+    <div class="d-box d-dim" style="left:${O.x + L}px;top:${O.y - 28}px;width:${h*U}px;height:20px;--dc:var(--hl-c)"><span>${sg === '−' ? '−' : ''}${h}</span></div>
+    <div class="d-box d-dim vert" style="top:${O.y}px;left:${O.x - 28}px;height:${L}px;width:20px;--dc:var(--hl-a)"><span>${X}</span></div>
+    <div class="d-box d-dim vert" style="top:${O.y + L}px;left:${O.x - 28}px;height:${h*U}px;width:20px;--dc:var(--hl-c)"><span>${sg === '−' ? '−' : ''}${h}</span></div>`;
+  const steps = [];
+  const move = fn => async () => { pushHistory(); fn(); render(); await wait(450); };
+  if (pairCount()) steps.push({ text:'First cancel the zero pairs, so only one kind of each tile is left.', run: cancelAll });
+  steps.push({ text:`Put the x² tile in the corner and lay ${h} ${xt} tile${h > 1 ? 's' : ''} along its bottom.`, run: move(placeA) });
+  steps.push({ text:`Stand the other ${h} ${xt} tile${h > 1 ? 's' : ''} up along its right side.`, run: move(placeB) });
+  steps.push({ text: `The corner is ${h} by ${h}, so it needs ${need} one${need > 1 ? 's' : ''}.` + (sx < 0 ? ` Both sides are −${h}, and (−${h}) × (−${h}) = +${need}, so the corner needs positive ones.` : ''),
+    run: async () => { ov(cornerBox); await wait(200); } });
+  const cPos = Math.max(c, 0), used = Math.min(cPos, need);
+  steps.push({ text: cPos === 0 ? `There are no positive ones to move${c < 0 ? `, so the ${-c} −1 ball${-c > 1 ? 's wait' : ' waits'} outside` : ''}.`
+      : `Move ${used} one${used > 1 ? 's' : ''} into the corner.` + (cPos > need ? ` ${cPos - need} ${cPos - need > 1 ? 'are' : 'is'} left over outside.` : cPos < need ? ` It still needs ${need - cPos} more.` : ' They fit exactly.'),
+    run: move(() => {
+      ones(1).forEach((t, i) => Object.assign(t, i < need ? corner(i) : outPos(i - need)));
+      ones(-1).forEach((t, i) => Object.assign(t, negPos(i)));
+    }) });
+  if (k > 0){
+    const n0 = Math.max(-c, 0);
+    steps.push({ text:`Add ${k} zero pair${k > 1 ? 's' : ''}: ${k} × +1 and ${k} × −1. Adding zero keeps the value the same.`,
+      run: move(() => { for (let i = 0; i < k; i++){ const a = outPos(n0 + i), z = negPos(n0 + i); newBall('one', 1, 'L', a.x, a.y); newBall('one', -1, 'L', z.x, z.y); } }) });
+    steps.push({ text:`Move the +1 balls into the corner. The −1 balls wait outside.`,
+      run: move(() => ones(1).forEach((t, i) => Object.assign(t, corner(i)))) });
+  }
+  steps.push({ text:`The square is complete. Each side is x ${sg} ${h}, so ${txt(e0)} = ${txt(fin)}.`,
+    run: async () => { ov(dims); await wait(200); } });
+  if (r){
+    const n = Math.abs(r), single = n <= maxRows || (r > 0 && false);
+    // positive leftovers wait in a column beside the square; −1s in the next column
+    const rectHTML = single ? (r > 0 ? leftRectHTML(x0, O.y, r, true) : leftRectHTML(x0 + U + 6, O.y, r, true)) : '';
+    steps.push({ text:`${n} ${r > 0 ? 'unit' : '−1'} ball${n > 1 ? 's are' : ' is'} left over outside the square` + (single ? `. They make a rectangle 1 by ${n}: 1 × ${r > 0 ? n : `(−${n})`} = ${r > 0 ? n : '−' + n}.` : '.'),
+      run: async () => { ov(dims + rectHTML); await wait(200); } });
+  }
+  if (k > 0){
+    const n0 = Math.max(-c, 0);
+    steps.push({ text:`Now cancel the ${k} zero pair${k > 1 ? 's' : ''}: each −1 slides onto a +1 in the corner and both disappear. The square is left with ${k} gap${k > 1 ? 's' : ''}` + (n0 ? `, and the ${n0} −1 ball${n0 > 1 ? 's' : ''} you started with stay${n0 > 1 ? '' : 's'} outside.` : `: (x ${sg} ${h})² with ${k} missing.`),
+      run: async () => {
+        pushHistory();
+        const pos = ones(1).slice(-k), neg = ones(-1).slice(-k);   // the +1s and −1s that were added as zero pairs
+        const gaps = pos.map(t => `<div class="d-hole show" style="left:${t.x - U/2}px;top:${t.y - U/2}px">−1</div>`).join('');
+        busy = true; await slideCancel(pos.map((t, i) => [t, neg[i]])); busy = false; render();
+        ov(dims + gaps); await wait(200);
+      } });
+  }
+  steps.push({ text:'Write the answer in its simplest form.', run: async () => { csq.result = `${e0}<span class="eq">=</span>${fin}`; updateUI(); } });
+  csq.steps = steps; csq.final = { end:true, good:true, text:`So ${txt(e0)} = ${txt(fin)}.` }; csq.result = null;
+  startCsqPanel();
+}
+function startCsqPanel(){
+  solver.engine = 'csq';
+  solver.on = true; solver.step = 0; solver.start = history.length;
+  $('#solver').hidden = false; $('#tray').hidden = true; $('#actions').hidden = true;
+  updateUI(); solverUI();
+}
+$('#csqBtn').onclick = openCsq;
+
+/* ---------- Expression mode: simplify step by step, in the expression and on the board ---------- */
+const TNAME = { x2:'x² tiles', x:'x tiles', one:'unit balls' };
+const TBODY = { x2: X2, x: X, one: '' };
+// a count of tiles of one kind, written as a term: 3x, x², 5 …
+const termOf = (t, n) => t === 'one' ? `${n}` : `${coef(n)}${TBODY[t]}`;
+// write tile counts as an expression, keeping positives and negatives of each kind side by side; mark one kind
+function writeCounts(cnt, mark){
+  const parts = [];
+  for (const t of ORDER){
+    const {pos, neg} = cnt[t], grp = [];
+    if (pos) grp.push([false, termOf(t, pos)]);
+    if (neg) grp.push([true, termOf(t, neg)]);
+    if (!grp.length) continue;
+    let html = grp.map(([n, b], i) => (parts.length || i ? (n ? ' − ' : ' + ') : (n ? '−' : '')) + b).join('');
+    if (t === mark){
+      const lead = html.match(/^ [+−] /)?.[0] || '';
+      html = lead + term(html.slice(lead.length), 'var(--accent)', 'var(--accent)');
+    }
+    parts.push(html);
+  }
+  return parts.join('') || '0';
+}
+async function cancelKind(t){
+  busy = true;
+  const g = balls.filter(b => b.t === t && !b.f), pos = g.filter(b => b.s > 0), neg = g.filter(b => b.s < 0);
+  const pairs = []; for (let i = 0; i < Math.min(pos.length, neg.length); i++) pairs.push([pos[i], neg[i]]);
+  await slideCancel(pairs);
+  busy = false; render();
+}
+function openSimp(){
+  if (mode !== 'expr' || busy || !pairCount()) return;
+  closeSuggest();
+  const cnt = {};
+  for (const t of ORDER){ const g = balls.filter(b => b.t === t && !b.f); cnt[t] = { pos: g.filter(b => b.s > 0).length, neg: g.filter(b => b.s < 0).length }; }
+  const grouped = writeCounts(cnt), steps = [];
+  steps.push({ text:'Put like tiles together: x² with x², x with x, and units with units. Positives and negatives of the same kind sit side by side.',
+    run: async () => { pushHistory(); tidy(); render(); csq.result = grouped; updateUI(); await wait(400); } });
+  let prev = grouped;
+  for (const t of ORDER){
+    const {pos, neg} = cnt[t], k = Math.min(pos, neg);
+    if (!k) continue;
+    const before = termOf(t, pos) + ' − ' + termOf(t, neg), net = pos - neg;
+    const after = net === 0 ? '0' : net > 0 ? termOf(t, net) : '−' + termOf(t, -net);
+    cnt[t] = { pos: Math.max(net, 0), neg: Math.max(-net, 0) };
+    const now = writeCounts(cnt, t), line = `${prev}<span class="eq">=</span>${now}`, was = prev;
+    steps.push({ text:`Cancel ${k} zero pair${k > 1 ? 's' : ''} of ${TNAME[t]}: ${txt(before)} = ${txt(after)}.` + (net === 0 ? ` The ${TNAME[t]} cancel completely.` : ''),
+      run: async () => { pushHistory(); csq.result = line; updateUI(); await cancelKind(t); csq.result = line; updateUI(); } });
+    prev = writeCounts(cnt);
+    void was;
+  }
+  const simplified = writeCounts(cnt);
+  steps.push({ text:'Write the answer in its simplest form.', run: async () => { csq.result = `${grouped}<span class="eq">=</span>${simplified}`; updateUI(); } });
+  csq.steps = steps; csq.final = { end:true, good:true, text:`So ${txt(grouped)} = ${txt(simplified)}.` };
+  csq.start = grouped; csq.result = grouped;
+  solver.engine = 'simp';
+  solver.on = true; solver.step = 0; solver.start = history.length;
+  $('#solver').hidden = false; $('#tray').hidden = true; $('#actions').hidden = true;
+  updateUI(); solverUI();
+}
+$('#simpBtn').onclick = openSimp;
+
+/* ---------- challenges: every Square and Factor demo example, to do on the board ---------- */
+const chal = { on:null };
+function challengeList(){
+  const sq = EXAMPLES.map((e, i) => {
+    const h = e.b/2, r = e.c - h*h, text = `x² + ${coef(e.b)}x${e.c ? ` + ${e.c}` : ''}`;
+    return { kind:'square', i, text,
+      goal:`Complete the square: arrange ${text} into a square with sides x + ${h}. Add zero pairs if you need more ones.`,
+      hint:`Split the ${e.b} x tiles into two groups of ${h}. Lay one group along the bottom of the x² tile and tap the others to stand them up on its right. The corner then needs ${h*h} one${h*h > 1 ? 's' : ''}${r < 0 ? `, but there ${e.c === 1 ? 'is' : 'are'} only ${e.c}: add ${-r} zero pair${-r > 1 ? 's' : ''} of balls` : ''}.`,
+      answer:`${text} = (x + ${h})²${r > 0 ? ` + ${r}` : r < 0 ? ` − ${-r}` : ''}` };
+  });
+  const fa = BINOMS.map((e, i) => {
+    if (e.gcf){
+      const sg = e.gcf < 0 ? '−' : '+', text = `x² ${sg} ${coef(e.a)}x`;
+      return { kind:'factor', i, text, goal:`Factor ${text}: arrange every tile into one rectangle, then read its sides.`,
+        hint:`Tap the x tile${e.a > 1 ? 's' : ''} to stand ${e.a > 1 ? 'them' : 'it'} up, then slide ${e.a > 1 ? 'them' : 'it'} against the right side of the x² tile.`,
+        answer:`${text} = x(x ${sg} ${e.a})` };
+    }
+    const text = `x² − ${e.a*e.a}`;
+    return { kind:'factor', i, text, goal:`Factor ${text}: arrange every tile into one rectangle. You'll need zero pairs of x tiles.`,
+      hint:`Add ${e.a} zero pair${e.a > 1 ? 's' : ''} of x tiles. Stand the +x tiles up on the right of the x² tile, lay the −x tiles along its bottom, and put the −1 balls in the corner.`,
+      answer:`${text} = (x + ${e.a})(x − ${e.a})` };
+  });
+  return { sq, fa };
+}
+function renderChallengeList(){
+  const {sq, fa} = challengeList(), btn = (c, g) => `<button type="button" data-g="${g}" data-i="${c.i}">${c.text}</button>`;
+  $('#chalList').innerHTML =
+    `<div class="presets"><span class="tag">Square challenges</span>${sq.map(c => btn(c, 'sq')).join('')}</div>` +
+    `<div class="presets"><span class="tag">Factor challenges</span>${fa.map(c => btn(c, 'fa')).join('')}</div>`;
+}
+function startChallenge(c){
+  if (!build(c.text.replace('x² + x', 'x² + 1x').replace('x² − x', 'x² − 1x'))) return;
+  closeBuild();
+  chal.on = c;
+  $('#chalTag').textContent = 'Challenge'; $('#chalText').textContent = c.goal;
+  $('#chalExtra').hidden = true; $('#chalProg').hidden = true;
+  $('#chal').hidden = false;
+}
+function closeChallenge(){
+  if (!chal.on) return;
+  const wasPairs = chal.on.kind === 'pairs';
+  chal.on.box?.remove();
+  chal.on = null; $('#chal').hidden = true;
+  if (wasPairs && !demo.on && !solver.on){ $('#tray').hidden = false; $('#actions').hidden = false; }
+  updateUI();
+}
+$('#chalList').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const {sq, fa} = challengeList();
+  startChallenge((b.dataset.g === 'sq' ? sq : fa)[+b.dataset.i]);
+});
+$('#chalHint').onclick = () => { if (!chal.on) return; $('#chalExtra').textContent = 'Hint: ' + chal.on.hint; $('#chalExtra').hidden = false; };
+$('#chalAnswer').onclick = () => { if (!chal.on) return; $('#chalExtra').textContent = 'Answer: ' + chal.on.answer; $('#chalExtra').hidden = false; };
+$('#chalClose').onclick = closeChallenge;
+$('#chalDemo').onclick = () => {
+  const c = chal.on; if (!c) return;
+  if (c.kind === 'pairs'){ const n = c.n; enterDemo('pairs'); if (demo.pairsN !== n){ demo.pairsN = n; drawDemo(); } return; }
+  enterDemo(c.kind);
+  if (demo.ex !== c.i){ demo.ex = c.i; drawDemo(); }
+};
+renderChallengeList();
+
+/* ---------- factor pairs: your own number, and Your turn ---------- */
+function readPairsN(){
+  const raw = $('#pairsN').value.trim(), n = Number(raw), err = $('#pairsErr');
+  err.textContent = '';
+  if (raw === '' || !Number.isInteger(n) || n < 1){ err.textContent = 'Enter a whole number from 1 to 36.'; return null; }
+  if (n > PAIRS_MAX){ err.textContent = `${n} is more than 36, so its balls would be too small to see on a phone. Try 36 or less, and work out bigger numbers on paper.`; return null; }
+  return n;
+}
+$('#pairsForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const n = readPairsN(); if (n === null) return;
+  stopPlay(); demo.pairsN = n; drawDemo(); $('#pairsN').blur();
+});
+$('#pairsBack').onclick = () => { stopPlay(); demo.pairsN = null; $('#pairsN').value = ''; $('#pairsErr').textContent = ''; drawDemo(); };
+$('#pairsTurn').onclick = () => {
+  const typed = $('#pairsN').value.trim();
+  const n = typed ? readPairsN() : (demo.pairsN || 12);
+  if (n !== null) startPairsTurn(n);
+};
+// Your turn: the balls go on the board and the student drags them into rectangles; each new one is ticked off.
+const PBOX = { x: 44, y: 40 };   // top-left of the box on the board, leaving room for its side labels
+function startPairsTurn(n){
+  if (!build(`${n}`)) return;
+  const pairs = divisorPairs(n);
+  // lay out the panel first, then measure the board that is left, to see which rectangles can be built here
+  chal.on = { kind:'pairs', n, pairs, found: new Set(), auto: new Set(), cols: n,
+    hint: 'Try 2 balls in each row, then 3, then 4. If the last row comes out short, that number isn\'t a factor.',
+    answer: `${n} = ${pairs.map(([r, c]) => `${r} × ${c}`).join(' = ')}` };
+  $('#chalTag').textContent = 'Your turn';
+  $('#chalText').textContent = `Drag the round handle on the corner of the box to change how many balls go in each row. When every row is full, you've found a factor pair.`;
+  $('#chalExtra').hidden = true; $('#chalProg').hidden = false; $('#chal').hidden = false; $('#tray').hidden = true; $('#actions').hidden = true;
+  updateUI();
+  pairsLimits();
+  const c = chal.on;
+  const fits = ([r, k]) => (k >= c.minCols && k <= c.maxCols) || (r >= c.minCols && r <= c.maxCols);
+  for (const pr of pairs) if (!fits(pr)){ c.auto.add(pr.join('x')); c.found.add(pr.join('x')); }
+  c.cols = c.maxCols;
+  c.box = document.createElement('div'); c.box.className = 'pbox';
+  c.box.innerHTML = `<div class="pbox-frame"><b></b></div>
+    <div class="d-dim pb-top" style="--dc:${CN}"><span></span></div>
+    <div class="d-dim vert pb-side" style="--dc:${CG}"><span></span></div>
+    <button class="d-handle idle pbox-handle" type="button" aria-label="Corner of the box. Drag it, or use the left and right arrow keys, to change how many balls go in each row"><span class="knob"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 10v7h-7M7 14V7h7"/></svg></span></button>`;
+  board.appendChild(c.box);
+  bindPairsHandle(c.box.querySelector('.pbox-handle'));
+  pairsProgress();
+  layoutPairs();
+}
+// how many balls per row fit on the board: wide enough for the row, tall enough for all the rows
+function pairsLimits(){
+  const c = chal.on, maxW = Math.floor((board.clientWidth - PBOX.x - 34)/U), maxH = Math.floor((board.clientHeight - PBOX.y - 34)/U);
+  c.maxCols = Math.max(1, Math.min(c.n, maxW));
+  c.minCols = Math.min(c.maxCols, Math.max(1, Math.ceil(c.n / Math.max(1, maxH))));
+}
+function layoutPairs(){
+  const c = chal.on; if (!c || c.kind !== 'pairs' || !c.box) return;
+  const n = c.n, cols = c.cols, rows = Math.ceil(n/cols), full = n % cols === 0;
+  const bs = balls.filter(b => b.t === 'one').sort((a, b) => a.id - b.id);
+  bs.forEach((b, i) => { b.rot = false; b.x = PBOX.x + (i % cols)*U + U/2; b.y = PBOX.y + Math.floor(i/cols)*U + U/2; });
+  render();
+  const w = cols*U, h = rows*U, f = c.box.querySelector('.pbox-frame');
+  Object.assign(f.style, { left: (PBOX.x - 3) + 'px', top: (PBOX.y - 3) + 'px', width: (w + 6) + 'px', height: (h + 6) + 'px' });
+  f.classList.toggle('full', full);
+  f.querySelector('b').textContent = full ? `${rows} × ${cols} = ${n}` : `${cols} in each row: ${n % cols} left over`;
+  const top = c.box.querySelector('.pb-top'), side = c.box.querySelector('.pb-side');
+  Object.assign(top.style, { left: PBOX.x + 'px', top: (PBOX.y - 30) + 'px', width: w + 'px', height: '20px' });
+  Object.assign(side.style, { left: (PBOX.x - 30) + 'px', top: PBOX.y + 'px', height: h + 'px', width: '20px' });
+  top.querySelector('span').textContent = cols; side.querySelector('span').textContent = rows;
+  top.hidden = side.hidden = !full;
+  const hd = c.box.querySelector('.pbox-handle');
+  if (!c.dragging) hd.style.transform = `translate(${PBOX.x + w}px, ${PBOX.y + h}px)`;
+  if (full){
+    const key = [Math.min(rows, cols), Math.max(rows, cols)].join('x');
+    if (!c.found.has(key)){ c.found.add(key); toast(`Found ${Math.min(rows, cols)} × ${Math.max(rows, cols)} = ${n}`); pairsProgress(); }
+  }
+}
+function setPairsCols(k){
+  const c = chal.on; k = clamp(k, c.minCols, c.maxCols);
+  c.box.querySelector('.pbox-handle').classList.remove('idle');
+  if (k !== c.cols){ c.cols = k; layoutPairs(); }
+}
+function bindPairsHandle(hd){
+  let start = null;
+  hd.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation();
+    hd.setPointerCapture(e.pointerId);
+    start = { x: e.clientX, cols: chal.on.cols }; chal.on.dragging = true; hd.classList.add('grab');
+  });
+  hd.addEventListener('pointermove', e => {
+    if (!start || !chal.on) return;
+    const br = board.getBoundingClientRect(), x = clamp(e.clientX - br.left, PBOX.x + U/2, br.width - 20);
+    const rows = Math.ceil(chal.on.n / chal.on.cols);
+    hd.style.transform = `translate(${x}px, ${PBOX.y + rows*U}px)`;
+    setPairsCols(Math.round((x - PBOX.x)/U));
+  });
+  const end = () => { if (!start) return; start = null; hd.classList.remove('grab'); if (chal.on){ chal.on.dragging = false; layoutPairs(); } };
+  hd.addEventListener('pointerup', end); hd.addEventListener('pointercancel', end);
+  hd.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp'){ e.preventDefault(); setPairsCols(chal.on.cols + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown'){ e.preventDefault(); setPairsCols(chal.on.cols - 1); }
+  });
+}
+function pairsProgress(){
+  const c = chal.on; if (!c || c.kind !== 'pairs') return;
+  const done = c.pairs.filter(p => c.found.has(p.join('x'))).length;
+  $('#chalProg').innerHTML = `<span class="pchip found">Found ${done} of ${c.pairs.length}</span>` + c.pairs.map(p => {
+    const k = p.join('x');
+    return c.auto.has(k) ? `<span class="pchip auto">${p[0]} × ${p[1]} <small>too long to build here, so it counts</small></span>`
+         : c.found.has(k) ? `<span class="pchip found">${p[0]} × ${p[1]} ✓</span>` : `<span class="pchip">? × ?</span>`;
+  }).join('');
+  if (done === c.pairs.length){ $('#chalTag').textContent = 'Done'; $('#chalText').textContent = `You found every factor pair of ${c.n}.` + pairsSummary(c.n, c.pairs); }
+}
+// Is every ball in one filled rectangle (lined up on a grid with no gaps)?
+function checkPairs(){
+  const c = chal.on; if (!c || c.kind !== 'pairs' || busy) return;
+  const bs = balls.filter(b => b.t === 'one' && !b.f);
+  if (bs.length !== c.n || bs.length !== balls.length) return;
+  const minX = Math.min(...bs.map(b => b.x)), minY = Math.min(...bs.map(b => b.y));
+  const cells = new Set(); let R = 0, C = 0;
+  for (const b of bs){
+    const col = Math.round((b.x - minX)/U), row = Math.round((b.y - minY)/U);
+    if (Math.abs(b.x - minX - col*U) > 5 || Math.abs(b.y - minY - row*U) > 5) return;
+    cells.add(row + ',' + col); R = Math.max(R, row + 1); C = Math.max(C, col + 1);
+  }
+  if (cells.size !== c.n || R*C !== c.n) return;
+  const key = [Math.min(R, C), Math.max(R, C)].join('x');
+  if (c.found.has(key)) return;
+  c.found.add(key);
+  toast(`Found ${Math.min(R, C)} × ${Math.max(R, C)} = ${c.n}`);
+  pairsProgress();
+}
+
+/* ---------- controls ---------- */
+$('#modeExpr').onclick = () => { closeSolver(); exitDemo(); setMode('expr'); renderTry(); };
+$('#modeEq').onclick = () => { exitDemo(); setMode('eq'); renderTry(); };
+$('#modeDemo').onclick = () => enterDemo('square');
+$('#modeDrag').onclick = () => enterDemo('drag');
+$('#modeCube').onclick = () => enterDemo('cube');
+$('#modeFactor').onclick = () => enterDemo('factor');
+$('#modeZero').onclick = () => enterDemo('zero');
+$('#modePairs').onclick = () => enterDemo('pairs');
+document.querySelectorAll('#target button').forEach(b => b.onclick = () => { target = b.dataset.side; updateUI(); save(); });
+$('#pairsBtn').onclick = cancelAll;
+$('#flipBtn').onclick = flipAll;
+$('#divBtn').onclick = divide;
+$('#tidyBtn').onclick = () => { if (busy) return; pushHistory(); tidy(); render(); };
+$('#clearBtn').onclick = async () => { if (busy || !balls.length) return; busy = true; pushHistory(); await vanish(balls.map(b => b.id)); busy = false; render(); };
+$('#undoBtn').onclick = () => {
+  if (busy || !history.length) return;
+  const d = JSON.parse(history.pop());
+  balls = d.balls; mode = d.mode;
+  render();
+};
+const buildBtn = $('#buildBtn'), panel = $('#buildPanel');
+buildBtn.onclick = () => {
+  const open = panel.hidden; panel.hidden = !open; buildBtn.setAttribute('aria-expanded', open);
+  if (open) setTimeout(() => $('#buildInput').focus(), 50);
+};
+function closeBuild(){ panel.hidden = true; buildBtn.setAttribute('aria-expanded', false); }
+$('#buildForm').addEventListener('submit', e => { e.preventDefault(); if (build($('#buildInput').value)) { closeBuild(); $('#buildInput').blur(); openSuggest(); } });
+$('#presets').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; $('#buildInput').value = b.textContent; if (build(b.textContent)){ closeBuild(); openSuggest(); } });
+const help = $('#help');
+$('#helpBtn').onclick = () => { help.hidden = false; $('#helpClose').focus(); };
+$('#helpClose').onclick = () => { help.hidden = true; };
+help.addEventListener('click', e => { if (e.target === help) help.hidden = true; });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !help.hidden) help.hidden = true;
+  if ((e.metaKey || e.ctrlKey) && e.key === 'z' && document.activeElement.tagName !== 'INPUT'){ e.preventDefault(); $('#undoBtn').click(); }
+});
+
+/* ---------- start ---------- */
+let size = [0, 0], started = false;
+new ResizeObserver(() => {
+  const s = [board.clientWidth, board.clientHeight];
+  if (Math.abs(s[0] - size[0]) < 2 && Math.abs(s[1] - size[1]) < 2) return;
+  const widthChanged = Math.abs(s[0] - size[0]) >= 2;
+  size = s;
+  if (!started){
+    started = true;
+    if (load()){ tidy(); render(); }
+    else { build('x² + 3x + 2 − x − 4'); history = []; render(); }
+    return;
+  }
+  if (demo.on) fitDemo();
+  if (busy || drag) return;
+  // a panel opening or closing only changes the height: keep the student's arrangement and just keep pieces on the board
+  if (chal.on?.kind === 'pairs' && chal.on.box){ pairsLimits(); setPairsCols(chal.on.cols); layoutPairs(); return; }
+  if (mode === 'expr' && !widthChanged){
+    for (const b of balls){ const [w, h] = dims(b); b.x = clamp(b.x, w/2, s[0] - w/2); b.y = clamp(b.y, h/2, s[1] - h/2); }
+    render();
+  } else { tidy(); render(); }
+}).observe(board);
+})();
+</script>
+
+
+</body></html>
